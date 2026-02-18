@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block title %}Teacher Dashboard | UMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Teacher Dashboard</h1>
+</div>
+
+<div class="row">
+    <!-- Stats Cards -->
+    <div class="col-md-6 mb-4">
+        <div class="card text-white bg-primary shadow-sm h-100">
+            <div class="card-body">
+                <i class="bi bi-book fs-1 float-end opacity-50"></i>
+                <h5 class="card-title">My Courses</h5>
+                <h2 class="display-4 fw-bold">{{ total_courses }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card text-white bg-success shadow-sm h-100">
+            <div class="card-body">
+                <i class="bi bi-people fs-1 float-end opacity-50"></i>
+                <h5 class="card-title">Total Students</h5>
+                <h2 class="display-4 fw-bold">{{ total_students_taught }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-white py-3">
+        <h5 class="mb-0"><i class="bi bi-list-task me-2 text-primary"></i>Assigned Courses</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Course Code</th>
+                        <th>Name</th>
+                        <th>Credits</th>
+                        <th>Enrolled Students</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for course in courses %}
+                    <tr>
+                        <td><span class="badge bg-secondary">{{ course.course_code }}</span></td>
+                        <td>{{ course.name }}</td>
+                        <td>{{ course.credits }}</td>
+                        <td>{{ course.students.count }}</td>
+                        <td>
+                            <a href="#" class="btn btn-sm btn-outline-primary" title="View Students"><i
+                                    class="bi bi-people"></i></a>
+                            <a href="#" class="btn btn-sm btn-outline-success" title="Take Attendance"><i
+                                    class="bi bi-check2-square"></i></a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-4">No courses assigned yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

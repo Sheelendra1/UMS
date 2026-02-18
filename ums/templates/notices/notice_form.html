@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Post Notice | UMS{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Post New Notice</h1>
+    <a href="{% url 'notice_list' %}" class="btn btn-sm btn-outline-secondary">Back to List</a>
+</div>
+<div class="row">
+    <div class="col-md-8">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label">Title</label>
+                <input type="text" name="title" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Description</label>
+                <textarea name="description" class="form-control" rows="5" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Target Audience</label>
+                <select name="target_audience" class="form-select">
+                    {% for value, label in form.fields.target_audience.choices %}
+                    <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Attachment (Optional via File)</label>
+                <input type="file" name="attachment" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary">Post Notice</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

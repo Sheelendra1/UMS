@@ -1,0 +1,98 @@
+<div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark sidebar">
+    <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+        <span class="fs-4">UMS Admin</span>
+    </a>
+    <hr>
+    <ul class="nav nav-pills flex-column mb-auto">
+        <li class="nav-item">
+            <a href="{% url 'admin_dashboard' %}"
+                class="nav-link text-white {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}"
+                aria-current="page">
+                <i class="bi bi-speedometer2 me-2"></i>
+                Dashboard
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'student_list' %}" class="nav-link text-white">
+                <i class="bi bi-people me-2"></i>
+                Students
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'faculty_list' %}" class="nav-link text-white">
+                <i class="bi bi-person-badge me-2"></i>
+                Teachers
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'course_list' %}" class="nav-link text-white">
+                <i class="bi bi-book me-2"></i>
+                Courses
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'department_list' %}" class="nav-link text-white">
+                <i class="bi bi-building me-2"></i>
+                Departments
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'attendance_list' %}" class="nav-link text-white">
+                <i class="bi bi-calendar-check me-2"></i>
+                Attendance
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'exam_list' %}" class="nav-link text-white">
+                <i class="bi bi-file-earmark-text me-2"></i>
+                Exams
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'fee_structure_list' %}" class="nav-link text-white">
+                <i class="bi bi-cash-coin me-2"></i>
+                Fees
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'notice_list' %}" class="nav-link text-white">
+                <i class="bi bi-megaphone me-2"></i>
+                Notices
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'settings' %}" class="nav-link text-white">
+                <i class="bi bi-gear me-2"></i>
+                Settings
+            </a>
+        </li>
+    </ul>
+    <hr>
+    <div class="dropdown">
+        <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1"
+            data-bs-toggle="dropdown" aria-expanded="false">
+            {% if user.profile_image %}
+            <img src="{{ user.profile_image.url }}" alt="" width="32" height="32" class="rounded-circle me-2">
+            {% else %}
+            <img src="https://ui-avatars.com/api/?name={{ user.username }}" alt="" width="32" height="32"
+                class="rounded-circle me-2">
+            {% endif %}
+            <strong>{{ user.username }}</strong>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
+            <li><a class="dropdown-item" href="#">Profile</a></li>
+            <li>
+                <a href="{% url 'password_change' %}" class="dropdown-item">Change Password</a>
+            </li>
+            <li>
+                <hr class="dropdown-divider">
+            </li>
+            <li>
+                <form action="{% url 'logout' %}" method="post" class="m-0">
+                    {% csrf_token %}
+                    <button type="submit" class="dropdown-item">Sign out</button>
+                </form>
+            </li>
+        </ul>
+    </div>
+</div>

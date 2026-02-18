@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Confirm Delete | UMS{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Delete Exam?</h1>
+    <a href="{% url 'exam_list' %}" class="btn btn-sm btn-outline-secondary">Cancel</a>
+</div>
+<div class="alert alert-danger">
+    <p>Are you sure you want to delete exam "<strong>{{ object.course.name }} - {{ object.get_exam_type_display
+            }}</strong>"?</p>
+    <p>This will also delete associated results!</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Confirm Delete</button>
+        <a href="{% url 'exam_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Notices | UMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Notices</h1>
+    <a href="{% url 'notice_add' %}" class="btn btn-sm btn-primary"><i class="bi bi-megaphone"></i> Post Notice</a>
+</div>
+<div class="row">
+    {% for notice in notices %}
+    <div class="col-md-6 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span class="badge bg-secondary">{{ notice.get_target_audience_display }}</span>
+                <small class="text-muted">{{ notice.created_at|date:"M d, Y" }}</small>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">{{ notice.title }}</h5>
+                <p class="card-text">{{ notice.description|linebreaks }}</p>
+                {% if notice.attachment %}
+                <a href="{{ notice.attachment.url }}" class="btn btn-sm btn-outline-info" target="_blank">View
+                    Attachment</a>
+                {% endif %}
+            </div>
+            <div class="card-footer bg-transparent border-top-0 d-flex justify-content-between align-items-center">
+                <small class="text-muted">Posted by: {{ notice.posted_by.get_full_name|default:notice.posted_by.username
+                    }}</small>
+                {% if user == notice.posted_by or user.is_superuser %}
+                <a href="{% url 'notice_delete' notice.pk %}" class="bi bi-trash text-danger fs-5"></a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center text-muted">No notices posted yet.</div>
+    {% endfor %}
+</div>
+{% endblock %}

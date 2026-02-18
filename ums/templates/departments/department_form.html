@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}{% if object %}Edit{% else %}Add{% endif %} Department | UMS{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{% if object %}Edit{% else %}Add{% endif %} Department</h1>
+    <a href="{% url 'department_list' %}" class="btn btn-sm btn-outline-secondary">Back to List</a>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="id_name" class="form-label">Department Name</label>
+                <input type="text" name="name" class="form-control" id="id_name"
+                    value="{{ form.name.value|default:'' }}" required>
+                {% if form.name.errors %}
+                <div class="text-danger">{{ form.name.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="mb-3">
+                <label for="id_code" class="form-label">Code</label>
+                <input type="text" name="code" class="form-control" id="id_code"
+                    value="{{ form.code.value|default:'' }}" required>
+                {% if form.code.errors %}
+                <div class="text-danger">{{ form.code.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="mb-3">
+                <label for="id_hod" class="form-label">Head of Department</label>
+                <select name="hod" class="form-select" id="id_hod">
+                    <option value="">---------</option>
+                    {% for choice in form.hod.field.queryset %}
+                    <option value="{{ choice.pk }}" {% if form.hod.value|stringformat:"s"==choice.pk|stringformat:"s"
+                        %}selected{% endif %}>{{ choice }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Department</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

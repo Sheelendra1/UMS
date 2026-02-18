@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block title %}Attendance Detail | UMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Attendance Details</h1>
+    <a href="{% url 'attendance_list' %}" class="btn btn-sm btn-outline-secondary">Back to Overview</a>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-header">Total Students</div>
+            <div class="card-body">
+                <h5 class="card-title display-6">{{ total }}</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-header">Present</div>
+            <div class="card-body">
+                <h5 class="card-title display-6">{{ present }}</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-danger mb-3">
+            <div class="card-header">Absent</div>
+            <div class="card-body">
+                <h5 class="card-title display-6">{{ absent }}</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-dark bg-warning mb-3">
+            <div class="card-header">Percentage</div>
+            <div class="card-body">
+                <h5 class="card-title display-6">{{ percentage }}%</h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header bg-light">
+        <strong>Course:</strong> {{ attendance.course.name }} |
+        <strong>Date:</strong> {{ attendance.date }} |
+        <strong>Faculty:</strong> {{ attendance.marked_by.user.get_full_name }}
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Enrollment No</th>
+                <th>Student Name</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in records %}
+            <tr class="{% if record.status %}table-success{% else %}table-danger{% endif %}">
+                <td>{{ record.student.enrollment_no }}</td>
+                <td>{{ record.student.user.get_full_name }}</td>
+                <td>
+                    {% if record.status %}
+                    <span class="badge bg-success">Present</span>
+                    {% else %}
+                    <span class="badge bg-danger">Absent</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
