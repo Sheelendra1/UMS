@@ -1,0 +1,127 @@
+{% extends 'accountant/base_accountant.html' %}
+{% block title %}Collect Fees | UMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Collect Fees</h1>
+</div>
+
+<div class="row">
+    <!-- Search Student -->
+    <div class="col-lg-5 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0"><i class="bi bi-search me-2 text-primary"></i>Find Student</h5>
+            </div>
+            <div class="card-body">
+                <form method="get" class="mb-3">
+                    <div class="input-group">
+                        <input type="text" name="q" class="form-control"
+                            placeholder="Search by ID, Name, or Enrollment No" value="{{ query|default:'' }}" autofocus>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </form>
+
+                {% if search_results is not None %}
+                <div class="list-group">
+                    {% for s in search_results %}
+                    <a href="?student_id={{ s.id }}"
+                        class="list-group-item list-group-item-action {% if selected_student and selected_student.id == s.id %}active{% endif %}">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ s.user.get_full_name }}</strong>
+                                <br><small>{{ s.enrollment_no }} &middot; {{ s.department.name }} &middot; Sem {{
+                                    s.semester }}</small>
+                            </div>
+                            <i class="bi bi-chevron-right"></i>
+                        </div>
+                    </a>
+                    {% empty %}
+                    <div class="list-group-item text-center text-muted">No students found.</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Form -->
+    <div class="col-lg-7 mb-4">
+        {% if selected_student %}
+        <div class="card shadow-sm mb-3">
+            <div class="card-header bg-primary text-white py-3">
+                <h5 class="mb-0"><i class="bi bi-person me-2"></i>{{ selected_student.user.get_full_name }}</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6 mb-2"><strong>Enrollment:</strong> {{ selected_student.enrollment_no }}</div>
+                    <div class="col-6 mb-2"><strong>Department:</strong> {{ selected_student.department.name }}</div>
+                    <div class="col-6 mb-2"><strong>Semester:</strong> {{ selected_student.semester }}</div>
+                    <div class="col-6 mb-2">
+                        <strong>Total Fee:</strong>
+                        <span class="text-primary fw-bold">₹{{ fee_info.total_payable|floatformat:0 }}</span>
+                    </div>
+                    <div class="col-6 mb-2">
+                        <strong>Paid:</strong>
+                        <span class="text-success fw-bold">₹{{ fee_info.total_paid|floatformat:0 }}</span>
+                    </div>
+                    <div class="col-6 mb-2">
+                        <strong>Pending:</strong>
+                        <span class="text-danger fw-bold">₹{{ fee_info.pending|floatformat:0 }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if fee_info.pending > 0 %}
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white py-3">
+                <h5 class="mb-0"><i class="bi bi-cash-coin me-2"></i>Record Payment</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="student_id" value="{{ selected_student.id }}">
+                    <div class="mb-3">
+                        <label for="amount" class="form-label fw-bold">Payment Amount (₹)</label>
+                        <input type="number" name="amount" id="amount" class="form-control form-control-lg" min="1"
+                            max="{{ fee_info.pending }}" step="0.01" required
+                            placeholder="Max: ₹{{ fee_info.pending|floatformat:0 }}">
+                        <small class="text-muted">Maximum payable: ₹{{ fee_info.pending|floatformat:0 }}</small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="payment_mode" class="form-label fw-bold">Payment Mode</label>
+                        <select name="payment_mode" id="payment_mode" class="form-select form-select-lg" required>
+                            <option value="CASH">💵 Cash</option>
+                            <option value="CHEQUE">📝 Cheque</option>
+                            <option value="ONLINE">🌐 Online</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-success btn-lg w-100">
+                        <i class="bi bi-check-circle me-2"></i>Collect Payment & Generate Receipt
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% else %}
+        <div class="alert alert-success text-center py-4">
+            <i class="bi bi-check-circle fs-1 d-block mb-2"></i>
+            <h5>All Fees Cleared!</h5>
+            <p class="mb-0">This student has no pending dues.</p>
+        </div>
+        {% endif %}
+
+        {% else %}
+        <div class="card shadow-sm">
+            <div class="card-body text-center py-5 text-muted">
+                <i class="bi bi-arrow-left-circle fs-1 d-block mb-3"></i>
+                <h5>Search & Select a Student</h5>
+                <p>Use the search panel on the left to find a student and collect fees.</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

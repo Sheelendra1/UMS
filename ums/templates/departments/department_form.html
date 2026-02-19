@@ -30,8 +30,8 @@
                 <select name="hod" class="form-select" id="id_hod">
                     <option value="">---------</option>
                     {% for choice in form.hod.field.queryset %}
-                    <option value="{{ choice.pk }}" {% if form.hod.value|stringformat:"s"==choice.pk|stringformat:"s"
-                        %}selected{% endif %}>{{ choice }}</option>
+                    <option value="{{ choice.pk }}" {% if form.instance.hod.pk == choice.pk %}selected{% endif %}>{{
+                        choice }}</option>
                     {% endfor %}
                 </select>
             </div>

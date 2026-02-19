@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Result Sheet - {{ exam.course.name }}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .header h2 {
+            margin: 5px 0;
+            font-size: 18px;
+            color: #555;
+        }
+
+        .info {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid #333;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .print-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        @media print {
+            .print-btn {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <button onclick="window.print()" class="print-btn">Print Sheet</button>
+
+    <div class="header">
+        <h1>UNIVERSITY RESULT SHEET</h1>
+        <h2>{{ exam.course.department.name }}</h2>
+    </div>
+
+    <div class="info">
+        <div>
+            <strong>Course:</strong> {{ exam.course.name }} ({{ exam.course.code }})<br>
+            <strong>Exam Type:</strong> {{ exam.get_exam_type_display }}
+        </div>
+        <div style="text-align: right;">
+            <strong>Date:</strong> {{ exam.date }}<br>
+            <strong>Total Marks:</strong> {{ exam.total_marks }}
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 50px;">S.No.</th>
+                <th style="width: 120px;">Enrollment No.</th>
+                <th>Student Name</th>
+                <th style="width: 100px; text-align: center;">Marks Obtained</th>
+                <th style="width: 100px; text-align: center;">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for result in results %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ result.student.enrollment_no }}</td>
+                <td>{{ result.student.user.get_full_name }}</td>
+                <td style="text-align: center;">{{ result.marks_obtained }}</td>
+                <td style="text-align: center;">
+                    {% if result.marks_obtained >= 40 %}Passed{% else %}Failed{% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" style="text-align: center;">No results found for this exam.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div style="margin-top: 40px; display: flex; justify-content: space-between;">
+        <div>
+            ______________________<br>
+            <strong>Exam Coordinator</strong>
+        </div>
+        <div style="text-align: right;">
+            ______________________<br>
+            <strong>HOD Signature</strong>
+        </div>
+    </div>
+</body>
+
+</html>

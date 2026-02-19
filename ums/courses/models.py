@@ -8,8 +8,8 @@ class Course(models.Model):
     faculty = models.ForeignKey('faculty.Faculty', on_delete=models.SET_NULL, null=True)
     semester = models.IntegerField()
     credits = models.IntegerField()
+    capacity = models.IntegerField(default=60)
     students = models.ManyToManyField('students.Student', related_name='enrolled_courses', blank=True)
-    capacity = models.PositiveIntegerField(default=50)
 
     def __str__(self):
         return f"{self.name} ({self.code})"

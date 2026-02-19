@@ -10,6 +10,7 @@ class Notice(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
     target_audience = models.CharField(max_length=20, choices=AUDIENCE_CHOICES, default='ALL')
+    target_course = models.ForeignKey('courses.Course', on_delete=models.SET_NULL, null=True, blank=True, related_name='notices')
     attachment = models.FileField(upload_to='notices/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     posted_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

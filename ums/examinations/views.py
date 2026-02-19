@@ -3,6 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.contrib import messages
 from .models import Exam, Result
+from .forms import ExamForm
 from students.models import Student
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -16,7 +17,7 @@ class ExamListView(LoginRequiredMixin, ListView):
 
 class ExamCreateView(LoginRequiredMixin, CreateView):
     model = Exam
-    fields = ['course', 'exam_type', 'total_marks', 'date', 'start_time', 'end_time', 'room_number']
+    form_class = ExamForm
     template_name = 'examinations/exam_form.html'
     success_url = reverse_lazy('exam_list')
     
@@ -26,7 +27,7 @@ class ExamCreateView(LoginRequiredMixin, CreateView):
 
 class ExamUpdateView(LoginRequiredMixin, UpdateView):
     model = Exam
-    fields = ['course', 'exam_type', 'total_marks', 'date', 'start_time', 'end_time', 'room_number', 'is_published']
+    form_class = ExamForm
     template_name = 'examinations/exam_form.html'
     success_url = reverse_lazy('exam_list')
     
@@ -46,6 +47,11 @@ class ExamDeleteView(LoginRequiredMixin, DeleteView):
 @login_required
 def result_entry(request, pk):
     exam = get_object_or_404(Exam, pk=pk)
+    
+    if exam.is_published:
+        messages.error(request, "Results are published and locked. You cannot modify them.")
+        return redirect('exam_list')
+
     students = exam.course.students.all()
     
     if request.method == 'POST':
@@ -78,3 +84,29 @@ def result_entry(request, pk):
         'exam': exam,
         'student_data': student_data
     })
+
+@login_required
+def result_sheet(request, pk):
+    exam = get_object_or_404(Exam, pk=pk)
+    results = Result.objects.filter(exam=exam).select_related('student', 'student__user').order_by('student__enrollment_no')
+    
+    return render(request, 'examinations/result_sheet.html', {
+        'exam': exam,
+        'results': results
+    })
+
+@login_required
+def publish_exam(request, pk):
+    """
+    Toggle the publication status of an exam result.
+    If published, students can see their results.
+    """
+    exam = get_object_or_404(Exam, pk=pk)
+    # Toggle status
+    exam.is_published = not exam.is_published
+    exam.save()
+    
+    status_msg = "published" if exam.is_published else "unpublished"
+    messages.success(request, f"Exam results {status_msg} successfully.")
+    
+    return redirect('exam_list')

@@ -29,14 +29,20 @@
                 <td>{{ exam.room_number|default:"-" }}</td>
                 <td>
                     {% if exam.is_published %}
-                    <span class="badge bg-success">Published</span>
+                    <a href="{% url 'exam_publish' exam.pk %}" class="btn btn-sm btn-outline-success" title="Unpublish">
+                        <i class="bi bi-check-circle-fill"></i> Published
+                    </a>
                     {% else %}
-                    <span class="badge bg-warning text-dark">Draft</span>
+                    <a href="{% url 'exam_publish' exam.pk %}" class="btn btn-sm btn-outline-warning text-dark" title="Publish">
+                        <i class="bi bi-circle"></i> Draft
+                    </a>
                     {% endif %}
                 </td>
                 <td>
                     <a href="{% url 'result_entry' exam.pk %}" class="btn btn-sm btn-outline-info"
                         title="Enter Marks"><i class="bi bi-award"></i></a>
+                    <a href="{% url 'result_sheet' exam.pk %}" class="btn btn-sm btn-outline-dark" title="Result Sheet"
+                        target="_blank"><i class="bi bi-printer"></i></a>
                     <a href="{% url 'exam_edit' exam.pk %}" class="btn btn-sm btn-outline-secondary" title="Edit"><i
                             class="bi bi-pencil"></i></a>
                     <a href="{% url 'exam_delete' exam.pk %}" class="btn btn-sm btn-outline-danger" title="Delete"><i

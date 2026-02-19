@@ -1,0 +1,91 @@
+{% extends 'teacher/base_teacher.html' %}
+{% block title %}Attendance Report | UMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Attendance Report</h1>
+</div>
+
+<div class="card mb-4 bg-light shadow-sm">
+    <div class="card-body">
+        <form class="row g-3 align-items-end" method="get">
+            <div class="col-md-4">
+                <label for="course" class="form-label">Course</label>
+                <select name="course" id="course" class="form-select" required>
+                    <option value="">Select Course...</option>
+                    {% for c in courses %}
+                    <option value="{{ c.id }}" {% if selected_course.id == c.id %}selected{% endif %}>
+                        {{ c.name }} ({{ c.code }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="start_date" class="form-label">From</label>
+                <input type="date" name="start_date" class="form-control" value="{{ start_date|default:'' }}">
+            </div>
+            <div class="col-md-3">
+                <label for="end_date" class="form-label">To</label>
+                <input type="date" name="end_date" class="form-control" value="{{ end_date|default:'' }}">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">Generate</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if selected_course %}
+<div class="card shadow-sm">
+    <div class="card-header bg-white">
+        <h5 class="mb-0">Report for {{ selected_course.name }}</h5>
+        <small class="text-muted">
+            {% if start_date and end_date %}
+                From {{ start_date }} to {{ end_date }}
+            {% else %}
+                All records
+            {% endif %}
+        </small>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Enrollment No</th>
+                    <th>Student Name</th>
+                    <th class="text-center">Present / Total</th>
+                    <th class="text-center">Percentage</th>
+                    <th style="width: 30%;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stat in students_stats %}
+                <tr>
+                    <td>{{ stat.student.enrollment_no }}</td>
+                    <td>{{ stat.student.user.get_full_name }}</td>
+                    <td class="text-center">{{ stat.present }} / {{ stat.total }}</td>
+                    <td class="text-center fw-bold">{{ stat.percentage }}%</td>
+                    <td>
+                        <div class="progress" style="height: 20px;">
+                            <div class="progress-bar {% if stat.percentage >= 75 %}bg-success{% elif stat.percentage >= 60 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                 role="progressbar" 
+                                 style="width: {{ stat.percentage }}%;" 
+                                 aria-valuenow="{{ stat.percentage }}" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="100">
+                                {{ stat.percentage }}%
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-4 text-muted">No students found or enrolled.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

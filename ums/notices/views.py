@@ -26,6 +26,6 @@ class NoticeDeleteView(LoginRequiredMixin, DeleteView):
     template_name = 'notices/notice_confirm_delete.html'
     success_url = reverse_lazy('notice_list')
     
-    def delete(self, request, *args, **kwargs):
+    def form_valid(self, form):
         messages.success(self.request, "Notice deleted successfully.")
-        return super().delete(request, *args, **kwargs)
+        return super().form_valid(form)

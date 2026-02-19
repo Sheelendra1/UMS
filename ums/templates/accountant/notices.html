@@ -1,0 +1,49 @@
+{% extends 'accountant/base_accountant.html' %}
+{% block title %}Notices | UMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Notices</h1>
+    <a href="{% url 'accountant_post_notice' %}" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-1"></i>Post Notice
+    </a>
+</div>
+
+{% for notice in notices %}
+<div class="card shadow-sm mb-3">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <h5 class="card-title mb-1">
+                    {% if notice.posted_by == request.user %}
+                    <span class="badge bg-success me-2">My Post</span>
+                    {% else %}
+                    <span class="badge bg-secondary me-2">{{ notice.get_target_audience_display }}</span>
+                    {% endif %}
+                    {{ notice.title }}
+                </h5>
+                <small class="text-muted">
+                    <i class="bi bi-person me-1"></i>{{ notice.posted_by.get_full_name|default:notice.posted_by.username
+                    }}
+                    &middot;
+                    <i class="bi bi-calendar me-1"></i>{{ notice.created_at|date:"d M Y, h:i A" }}
+                </small>
+            </div>
+            {% if notice.attachment %}
+            <a href="{{ notice.attachment.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                <i class="bi bi-download"></i>
+            </a>
+            {% endif %}
+        </div>
+        <hr>
+        <p class="card-text">{{ notice.description }}</p>
+    </div>
+</div>
+{% empty %}
+<div class="alert alert-info text-center py-5">
+    <i class="bi bi-bell-slash fs-1 d-block mb-2"></i>
+    <h5>No Notices</h5>
+    <p class="mb-0 text-muted">No notices to display.</p>
+</div>
+{% endfor %}
+{% endblock %}

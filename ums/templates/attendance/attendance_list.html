@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends base_template|default:'base.html' %}
 {% block title %}Attendance Overview | UMS{% endblock %}
 
 {% block content %}
@@ -8,23 +8,30 @@
 
 <div class="card mb-4 bg-light shadow-sm">
     <div class="card-body">
-        <form method="get" class="row g-3 align-items-end">
-            <div class="col-md-4">
-                <label class="form-label">Filter by Course</label>
-                <select name="course" class="form-select">
+        <form class="row g-3 align-items-end mb-4">
+            <div class="col-auto">
+                <label for="course" class="form-label">Course</label>
+                <select name="course" id="course" class="form-select">
                     <option value="">All Courses</option>
                     {% for course in courses %}
-                    <option value="{{ course.id }}" {% if selected_course==course.id %}selected{% endif %}>{{
-                        course.name }} ({{ course.code }})</option>
+                    <option value="{{ course.id }}" {% if selected_course == course.id %}selected{% endif %}>{{
+                        course.name }}</option>
                     {% endfor %}
                 </select>
             </div>
-            <div class="col-md-4">
-                <label class="form-label">Filter by Date</label>
-                <input type="date" name="date" class="form-control" value="{{ selected_date }}">
+            <div class="col-auto">
+                <label for="start_date" class="form-label">From</label>
+                <input type="date" name="start_date" id="start_date" class="form-control" value="{{ start_date|default:'' }}">
             </div>
-            <div class="col-md-4">
-                <button type="submit" class="btn btn-primary w-100"><i class="bi bi-filter"></i> Apply Filters</button>
+            <div class="col-auto">
+                <label for="end_date" class="form-label">To</label>
+                <input type="date" name="end_date" id="end_date" class="form-control" value="{{ end_date|default:'' }}">
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary">Filter</button>
+                <a href="{% url 'attendance_list' %}" class="btn btn-outline-secondary">Reset</a>
+                <a href="{% url 'attendance_export' %}?course={{ selected_course }}&start_date={{ start_date }}&end_date={{ end_date }}"
+                    class="btn btn-success ms-2"><i class="bi bi-file-earmark-spreadsheet"></i> Export CSV</a>
             </div>
         </form>
     </div>

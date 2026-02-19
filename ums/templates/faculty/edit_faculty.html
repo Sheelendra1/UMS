@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Faculty | UMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Edit Faculty: {{ faculty.user.get_full_name }}</h1>
+    <a href="{% url 'faculty_list' %}" class="btn btn-sm btn-outline-secondary">Back to List</a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="firstName" class="form-label">First Name</label>
+                    <input type="text" class="form-control" id="firstName" name="first_name" value="{{ faculty.user.first_name }}" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="lastName" class="form-label">Last Name</label>
+                    <input type="text" class="form-control" id="lastName" name="last_name" value="{{ faculty.user.last_name }}" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" value="{{ faculty.user.email }}" required>
+                </div>
+                
+                <div class="col-md-6">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="username" name="username" value="{{ faculty.user.username }}" readonly>
+                    <div class="form-text">Cannot be changed.</div>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="designation" class="form-label">Designation</label>
+                    <input type="text" class="form-control" id="designation" name="designation" value="{{ faculty.designation }}" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="department" class="form-label">Department</label>
+                    <select class="form-select" id="department" name="department" required>
+                        <option value="">Choose...</option>
+                        {% for dept in departments %}
+                        <option value="{{ dept.id }}" {% if faculty.department_id == dept.id %}selected{% endif %}>{{ dept.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="joiningDate" class="form-label">Joining Date</label>
+                    <input type="date" class="form-control" id="joiningDate" name="joining_date" value="{{ faculty.joining_date|date:'Y-m-d' }}" required>
+                </div>
+                
+                <div class="col-md-6">
+                    <label for="profileImage" class="form-label">Profile Image</label>
+                    {% if faculty.user.profile_image %}
+                        <div class="mb-2">
+                            <img src="{{ faculty.user.profile_image.url }}" alt="Current Profile Image" class="rounded-circle" width="50" height="50">
+                        </div>
+                    {% endif %}
+                    <input type="file" class="form-control" id="profileImage" name="profile_image" accept="image/*">
+                </div>
+
+                <div class="col-12 mt-4">
+                    <button type="submit" class="btn btn-primary">Update Faculty</button>
+                    <a href="{% url 'faculty_list' %}" class="btn btn-outline-secondary ms-2">Cancel</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

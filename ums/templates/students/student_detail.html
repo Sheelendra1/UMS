@@ -4,7 +4,10 @@
 {% block content %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h1 class="h2">Student Profile: {{ student.user.get_full_name }}</h1>
-    <a href="{% url 'student_list' %}" class="btn btn-sm btn-outline-secondary">Back to List</a>
+    <div class="btn-group">
+        <a href="{% url 'edit_student' student.pk %}" class="btn btn-sm btn-primary">Edit Profile</a>
+        <a href="{% url 'student_list' %}" class="btn btn-sm btn-outline-secondary">Back to List</a>
+    </div>
 </div>
 
 <div class="row">
@@ -68,12 +71,20 @@
         <ul class="nav nav-tabs" id="profileTab" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="results-tab" data-bs-toggle="tab" data-bs-target="#results"
-                    type="button" role="tab">Results</button>
+                    type="button" role="tab" aria-controls="results" aria-selected="true">Results</button>
             </li>
-            <!-- Add more tabs here -->
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="attendance-tab" data-bs-toggle="tab" data-bs-target="#attendance"
+                    type="button" role="tab" aria-controls="attendance" aria-selected="false">Attendance</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="fees-tab" data-bs-toggle="tab" data-bs-target="#fees"
+                    type="button" role="tab" aria-controls="fees" aria-selected="false">Fees</button>
+            </li>
         </ul>
         <div class="tab-content pt-3" id="profileTabContent">
-            <div class="tab-pane fade show active" id="results" role="tabpanel">
+            <!-- Results Tab -->
+            <div class="tab-pane fade show active" id="results" role="tabpanel" aria-labelledby="results-tab">
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead class="table-light">
@@ -97,6 +108,74 @@
                             {% empty %}
                             <tr>
                                 <td colspan="5" class="text-center text-muted">No results found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Attendance Tab -->
+            <div class="tab-pane fade" id="attendance" role="tabpanel" aria-labelledby="attendance-tab">
+                <div class="table-responsive">
+                    <table class="table table-hover table-sm">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Date</th>
+                                <th>Course</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in attendance_records %}
+                            <tr>
+                                <td>{{ record.attendance.date|date:"Y-m-d" }}</td>
+                                <td>{{ record.attendance.course.name }} ({{ record.attendance.course.code }})</td>
+                                <td>
+                                    {% if record.status %}
+                                    <span class="badge bg-success">Present</span>
+                                    {% else %}
+                                    <span class="badge bg-danger">Absent</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center text-muted">No details available.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Fees Tab -->
+            <div class="tab-pane fade" id="fees" role="tabpanel" aria-labelledby="fees-tab">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Date</th>
+                                <th>Receipt No</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pay in payments %}
+                            <tr>
+                                <td>{{ pay.payment_date|date:"Y-m-d" }}</td>
+                                <td>{{ pay.receipt_no }}</td>
+                                <td>${{ pay.amount_paid }}</td>
+                                <td>{{ pay.status }}</td>
+                                <td>
+                                    <a href="{% url 'fee_receipt_download_admin' pay.id %}" class="btn btn-sm btn-outline-info" target="_blank">Download</a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">No payment records found.</td>
                             </tr>
                             {% endfor %}
                         </tbody>

@@ -23,8 +23,7 @@
                 {% endif %}
             </div>
             <div class="card-footer bg-transparent border-top-0 d-flex justify-content-between align-items-center">
-                <small class="text-muted">Posted by: {{ notice.posted_by.get_full_name|default:notice.posted_by.username
-                    }}</small>
+                <small class="text-muted">Posted by: {% firstof notice.posted_by.get_full_name notice.posted_by.username %}</small>
                 {% if user == notice.posted_by or user.is_superuser %}
                 <a href="{% url 'notice_delete' notice.pk %}" class="bi bi-trash text-danger fs-5"></a>
                 {% endif %}

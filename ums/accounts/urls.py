@@ -4,12 +4,14 @@ from . import views
 
 urlpatterns = [
     # Login/Logout
-    path('login/', auth_views.LoginView.as_view(template_name='registration/login.html', redirect_authenticated_user=True), name='login'),
+    path('login/', views.CustomLoginView.as_view(template_name='registration/login.html', redirect_authenticated_user=True), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     
     # Dashboard Redirect
-    path('dashboard/', views.dashboard_redirect, name='dashboard_redirect'),
+    path('dashboard/', views.dashboard_redirect, name='dashboard_redirect'),    
     
+    # Profile
+    path('profile/', views.profile, name='profile'),
     # Password Reset (Forgot Password)
     path('password-reset/', auth_views.PasswordResetView.as_view(template_name='registration/password_reset_form.html'), name='password_reset'),
     path('password-reset/done/', auth_views.PasswordResetDoneView.as_view(template_name='registration/password_reset_done.html'), name='password_reset_done'),
@@ -17,6 +19,6 @@ urlpatterns = [
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='registration/password_reset_complete.html'), name='password_reset_complete'),
 
     # Password Change (Authenticated)
-    path('password-change/', auth_views.PasswordChangeView.as_view(template_name='registration/password_change_form.html'), name='password_change'),
-    path('password-change/done/', auth_views.PasswordChangeDoneView.as_view(template_name='registration/password_change_done.html'), name='password_change_done'),
+    path('password-change/', views.MainPasswordChangeView.as_view(), name='password_change'),
+    path('password-change/done/', views.MainPasswordChangeDoneView.as_view(), name='password_change_done'),
 ]

@@ -1,8 +1,11 @@
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
-from .models import Course
 from django.contrib import messages
+from .models import Course
+from students.models import Student
 
 class CourseListView(LoginRequiredMixin, ListView):
     model = Course
@@ -37,3 +40,30 @@ class CourseDeleteView(LoginRequiredMixin, DeleteView):
     def delete(self, request, *args, **kwargs):
         messages.success(self.request, "Course deleted successfully.")
         return super().delete(request, *args, **kwargs)
+
+
+@login_required
+def enroll_students(request, pk):
+    course = get_object_or_404(Course, pk=pk)
+
+    # Students must be in same Dept and Semester to be eligible
+    eligible_students = Student.objects.filter(
+        department=course.department,
+        semester=course.semester
+    ).exclude(enrolled_courses=course).select_related('user').order_by('enrollment_no')
+
+    if request.method == 'POST':
+        student_ids = request.POST.getlist('student_ids')
+        if student_ids:
+            students_to_enroll = Student.objects.filter(id__in=student_ids)
+            course.students.add(*students_to_enroll)
+            messages.success(request, f"Successfully enrolled {students_to_enroll.count()} students in {course.code} - {course.name}.")
+            return redirect('course_list')
+        else:
+            messages.warning(request, "No students selected.")
+
+    return render(request, 'courses/enroll_students.html', {
+        'course': course,
+        'eligible_students': eligible_students
+    })
+

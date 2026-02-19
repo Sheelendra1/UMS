@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Contact {{ university_name }} – Get in touch with us for admissions, queries, and support.">
+    <title>Contact Us | {{ university_name }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: #f8f9fa;
+        }
+
+        .contact-hero {
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            color: white;
+            padding: 5rem 0 6rem;
+            position: relative;
+        }
+
+        .contact-hero::before {
+            content: '';
+            position: absolute;
+            top: -30%;
+            right: -20%;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: rgba(102, 126, 234, 0.08);
+        }
+
+        .contact-card {
+            border: none;
+            border-radius: 16px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .contact-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        .contact-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+        }
+
+        footer {
+            background: #0f2027;
+            color: rgba(255, 255, 255, 0.7);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark"
+        style="background: rgba(0,0,0,0.2); position: absolute; width: 100%; z-index: 20;">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-4" href="{% url 'about_university' %}">
+                <i class="bi bi-mortarboard me-2"></i>{{ university_name }}
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav align-items-center">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'about_university' %}">About</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="{% url 'contact_page' %}">Contact</a></li>
+                    <li class="nav-item ms-2">
+                        {% if user.is_authenticated %}
+                        <a href="{% url 'dashboard_redirect' %}" class="btn btn-light btn-sm px-3">Dashboard</a>
+                        {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-light btn-sm px-3">Login</a>
+                        {% endif %}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="contact-hero text-center">
+        <div class="container position-relative" style="z-index: 5;">
+            <span class="badge bg-light bg-opacity-10 text-white px-3 py-2 mb-3">Get In Touch</span>
+            <h1 class="display-4 fw-900 mb-3">Contact Us</h1>
+            <p class="lead opacity-75" style="max-width: 550px; margin: 0 auto;">
+                Have questions? We're here to help. Reach out to us through any of the channels below.
+            </p>
+        </div>
+    </section>
+
+    <!-- Contact Cards -->
+    <section class="py-5" style="margin-top: -4rem; position: relative; z-index: 10;">
+        <div class="container">
+            <div class="row g-4 mb-5">
+                <div class="col-md-4">
+                    <div class="card contact-card shadow-sm h-100">
+                        <div class="card-body d-flex align-items-start gap-3 p-4">
+                            <div class="contact-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                                <i class="bi bi-geo-alt-fill"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1">Address</h6>
+                                <p class="text-muted mb-0 small">
+                                    University Campus, Main Road<br>
+                                    City, State – 000000<br>
+                                    India
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card contact-card shadow-sm h-100">
+                        <div class="card-body d-flex align-items-start gap-3 p-4">
+                            <div class="contact-icon" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+                                <i class="bi bi-envelope-fill"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1">Email</h6>
+                                <p class="text-muted mb-0 small">
+                                    info@university.edu<br>
+                                    admissions@university.edu<br>
+                                    support@university.edu
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card contact-card shadow-sm h-100">
+                        <div class="card-body d-flex align-items-start gap-3 p-4">
+                            <div class="contact-icon" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+                                <i class="bi bi-telephone-fill"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1">Phone</h6>
+                                <p class="text-muted mb-0 small">
+                                    +91 12345 67890 (Main)<br>
+                                    +91 98765 43210 (Admissions)<br>
+                                    Mon – Sat: 9AM – 5PM
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Form -->
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card shadow-sm border-0 rounded-4">
+                        <div class="card-body p-5">
+                            <h3 class="fw-bold mb-1">Send us a Message</h3>
+                            <p class="text-muted mb-4">Fill out the form below and we'll get back to you shortly.</p>
+
+                            {% if messages %}
+                            {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                            {% endfor %}
+                            {% endif %}
+
+                            <form method="post">
+                                {% csrf_token %}
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="name" class="form-label fw-bold">Full Name</label>
+                                        <input type="text" name="name" id="name" class="form-control form-control-lg"
+                                            placeholder="Your name" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="email" class="form-label fw-bold">Email</label>
+                                        <input type="email" name="email" id="email" class="form-control form-control-lg"
+                                            placeholder="you@example.com" required>
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="subject" class="form-label fw-bold">Subject</label>
+                                        <select name="subject" id="subject" class="form-select form-select-lg">
+                                            <option value="General Inquiry">General Inquiry</option>
+                                            <option value="Admissions">Admissions</option>
+                                            <option value="Fees & Payments">Fees & Payments</option>
+                                            <option value="Technical Support">Technical Support</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="message" class="form-label fw-bold">Message</label>
+                                        <textarea name="message" id="message" class="form-control form-control-lg"
+                                            rows="5" placeholder="Write your message..." required></textarea>
+                                    </div>
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                                            <i class="bi bi-send me-2"></i>Send Message
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-4 mt-5">
+        <div class="container text-center">
+            <p class="mb-1">
+                <i class="bi bi-mortarboard me-2"></i>{{ university_name }} — University Management System
+            </p>
+            <small>&copy; {{ current_year }} All rights reserved.</small>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

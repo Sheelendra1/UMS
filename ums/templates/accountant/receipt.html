@@ -1,0 +1,124 @@
+{% extends 'accountant/base_accountant.html' %}
+{% block title %}Receipt {{ payment.receipt_no }} | UMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .receipt-card {
+        max-width: 700px;
+        margin: 0 auto;
+        border: 2px solid #198754;
+    }
+
+    .receipt-header {
+        background: linear-gradient(135deg, #198754, #157347);
+        color: white;
+    }
+
+    @media print {
+        .receipt-card {
+            border: 2px solid #000;
+            max-width: 100%;
+        }
+
+        .receipt-header {
+            background: #333 !important;
+            color: white !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div
+    class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom no-print">
+    <h1 class="h2">Payment Receipt</h1>
+    <div>
+        <button onclick="window.print()" class="btn btn-primary">
+            <i class="bi bi-printer me-1"></i>Print Receipt
+        </button>
+        <a href="{% url 'accountant_payment_history' %}" class="btn btn-outline-secondary ms-2">
+            <i class="bi bi-arrow-left me-1"></i>Back
+        </a>
+    </div>
+</div>
+
+<div class="card receipt-card shadow-sm">
+    <div class="card-header receipt-header text-center py-4">
+        <h3 class="mb-1"><i class="bi bi-mortarboard me-2"></i>University Management System</h3>
+        <p class="mb-0 opacity-75">Fee Payment Receipt</p>
+    </div>
+    <div class="card-body p-4">
+        <div class="row mb-4">
+            <div class="col-6">
+                <p class="mb-1"><strong>Receipt No:</strong></p>
+                <h5 class="text-success">{{ payment.receipt_no }}</h5>
+            </div>
+            <div class="col-6 text-end">
+                <p class="mb-1"><strong>Date:</strong></p>
+                <h5>{{ payment.payment_date|date:"d M Y" }}</h5>
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="row mb-4">
+            <div class="col-12">
+                <h6 class="text-muted text-uppercase mb-3">Student Details</h6>
+            </div>
+            <div class="col-6 mb-2">
+                <strong>Name:</strong><br>{{ payment.student.user.get_full_name }}
+            </div>
+            <div class="col-6 mb-2">
+                <strong>Enrollment No:</strong><br>{{ payment.student.enrollment_no }}
+            </div>
+            <div class="col-6 mb-2">
+                <strong>Department:</strong><br>{{ payment.student.department.name }}
+            </div>
+            <div class="col-6 mb-2">
+                <strong>Semester:</strong><br>{{ payment.student.semester }}
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="row mb-4">
+            <div class="col-12">
+                <h6 class="text-muted text-uppercase mb-3">Payment Details</h6>
+            </div>
+            <div class="col-md-4 mb-2">
+                <strong>Amount Paid:</strong>
+                <h3 class="text-success fw-bold">₹{{ payment.amount_paid|floatformat:2 }}</h3>
+            </div>
+            <div class="col-md-4 mb-2">
+                <strong>Payment Mode:</strong>
+                <h5>{{ payment.get_payment_mode_display }}</h5>
+            </div>
+            <div class="col-md-4 mb-2">
+                <strong>Status:</strong>
+                <h5>
+                    {% if payment.status == 'PAID' %}
+                    <span class="badge bg-success fs-6">Paid ✓</span>
+                    {% else %}
+                    <span class="badge bg-warning fs-6">Pending</span>
+                    {% endif %}
+                </h5>
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="row">
+            <div class="col-6">
+                {% if payment.collected_by %}
+                <small class="text-muted">Collected by: {{ payment.collected_by.get_full_name }}</small>
+                {% endif %}
+            </div>
+            <div class="col-6 text-end">
+                <small class="text-muted">This is a computer-generated receipt.</small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,70 +1,158 @@
-{% extends 'base.html' %}
+{% extends 'teacher/base_teacher.html' %}
 {% block title %}Teacher Dashboard | UMS{% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h1 class="h2">Teacher Dashboard</h1>
+    <span class="text-muted">Welcome, {{ request.user.get_full_name }}</span>
 </div>
 
-<div class="row">
-    <!-- Stats Cards -->
-    <div class="col-md-6 mb-4">
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
         <div class="card text-white bg-primary shadow-sm h-100">
             <div class="card-body">
                 <i class="bi bi-book fs-1 float-end opacity-50"></i>
-                <h5 class="card-title">My Courses</h5>
-                <h2 class="display-4 fw-bold">{{ total_courses }}</h2>
+                <h6 class="card-title text-uppercase opacity-75">My Courses</h6>
+                <h2 class="display-5 fw-bold mb-0">{{ total_courses }}</h2>
             </div>
         </div>
     </div>
-    <div class="col-md-6 mb-4">
+    <div class="col-md-3">
         <div class="card text-white bg-success shadow-sm h-100">
             <div class="card-body">
                 <i class="bi bi-people fs-1 float-end opacity-50"></i>
-                <h5 class="card-title">Total Students</h5>
-                <h2 class="display-4 fw-bold">{{ total_students_taught }}</h2>
+                <h6 class="card-title text-uppercase opacity-75">Total Students</h6>
+                <h2 class="display-5 fw-bold mb-0">{{ total_students }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning shadow-sm h-100">
+            <div class="card-body">
+                <i class="bi bi-clipboard-check fs-1 float-end opacity-50"></i>
+                <h6 class="card-title text-uppercase opacity-75">Pending Grading</h6>
+                <h2 class="display-5 fw-bold mb-0">{{ pending_grading }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-info shadow-sm h-100">
+            <div class="card-body">
+                <i class="bi bi-megaphone fs-1 float-end opacity-50"></i>
+                <h6 class="card-title text-uppercase opacity-75">Notices Posted</h6>
+                <h2 class="display-5 fw-bold mb-0">{{ notices_count }}</h2>
             </div>
         </div>
     </div>
 </div>
 
-<div class="card shadow-sm mb-4">
-    <div class="card-header bg-white py-3">
-        <h5 class="mb-0"><i class="bi bi-list-task me-2 text-primary"></i>Assigned Courses</h5>
+<div class="row">
+    <!-- Today's Schedule -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-calendar-day me-2 text-primary"></i>Today's Schedule</h5>
+                <span class="badge bg-primary">{{ today_display }}</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Time</th>
+                                <th>Course</th>
+                                <th>Room</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for slot in todays_schedule %}
+                            <tr>
+                                <td><span class="badge bg-secondary">{{ slot.start_time|time:"h:i A" }} – {{ slot.end_time|time:"h:i A" }}</span></td>
+                                <td>{{ slot.course.name }}</td>
+                                <td>{{ slot.room_number }}</td>
+                                <td>
+                                    <a href="{% url 'teacher_take_attendance' %}?course={{ slot.course.id }}"
+                                        class="btn btn-sm btn-outline-success" title="Take Attendance">
+                                        <i class="bi bi-check2-square"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-4">No classes scheduled for today.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th>Course Code</th>
-                        <th>Name</th>
-                        <th>Credits</th>
-                        <th>Enrolled Students</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
+
+    <!-- Assigned Courses -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-list-task me-2 text-success"></i>Assigned Courses</h5>
+                <a href="{% url 'teacher_my_courses' %}" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
                     {% for course in courses %}
-                    <tr>
-                        <td><span class="badge bg-secondary">{{ course.course_code }}</span></td>
-                        <td>{{ course.name }}</td>
-                        <td>{{ course.credits }}</td>
-                        <td>{{ course.students.count }}</td>
-                        <td>
-                            <a href="#" class="btn btn-sm btn-outline-primary" title="View Students"><i
-                                    class="bi bi-people"></i></a>
-                            <a href="#" class="btn btn-sm btn-outline-success" title="Take Attendance"><i
-                                    class="bi bi-check2-square"></i></a>
-                        </td>
-                    </tr>
+                    <a href="{% url 'teacher_course_students' course.id %}"
+                        class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ course.name }}</strong>
+                            <br><small class="text-muted">{{ course.code }} &middot; Sem {{ course.semester }}</small>
+                        </div>
+                        <span class="badge bg-primary rounded-pill">{{ course.students.count }} students</span>
+                    </a>
                     {% empty %}
-                    <tr>
-                        <td colspan="5" class="text-center text-muted py-4">No courses assigned yet.</td>
-                    </tr>
+                    <div class="list-group-item text-center text-muted py-4">No courses assigned yet.</div>
                     {% endfor %}
-                </tbody>
-            </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0"><i class="bi bi-lightning me-2 text-warning"></i>Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <a href="{% url 'teacher_take_attendance' %}" class="btn btn-outline-success w-100 py-3">
+                            <i class="bi bi-calendar-check fs-4 d-block mb-1"></i>
+                            Take Attendance
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{% url 'teacher_upload_marks' %}" class="btn btn-outline-primary w-100 py-3">
+                            <i class="bi bi-pencil-square fs-4 d-block mb-1"></i>
+                            Upload Marks
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{% url 'teacher_post_notice' %}" class="btn btn-outline-info w-100 py-3">
+                            <i class="bi bi-megaphone fs-4 d-block mb-1"></i>
+                            Post Notice
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{% url 'teacher_reports' %}" class="btn btn-outline-warning w-100 py-3">
+                            <i class="bi bi-graph-up fs-4 d-block mb-1"></i>
+                            View Reports
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

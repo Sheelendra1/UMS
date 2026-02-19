@@ -1,0 +1,130 @@
+{% extends 'student/base_student.html' %}
+{% block title %}My Profile | UMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">My Profile</h1>
+</div>
+
+<div class="row">
+    <!-- Profile Card -->
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm text-center">
+            <div class="card-body py-4">
+                {% if user.profile_image %}
+                <img src="{{ user.profile_image.url }}" alt="Avatar" class="rounded-circle mb-3" width="120"
+                    height="120">
+                {% else %}
+                <img src="https://ui-avatars.com/api/?name={{ user.get_full_name|urlencode }}&size=120&background=0d6efd&color=fff"
+                    alt="Avatar" class="rounded-circle mb-3" width="120" height="120">
+                {% endif %}
+                <h4 class="card-title mb-1">{{ user.get_full_name }}</h4>
+                <p class="text-muted mb-1">{{ student.enrollment_no }}</p>
+                <span class="badge bg-primary">Student</span>
+                <span class="badge bg-info">Semester {{ student.semester }}</span>
+            </div>
+            <ul class="list-group list-group-flush text-start">
+                <li class="list-group-item">
+                    <i class="bi bi-envelope me-2 text-muted"></i>
+                    {% firstof user.email "Not set" %}
+                </li>
+                <li class="list-group-item">
+                    <i class="bi bi-telephone me-2 text-muted"></i>
+                    {% firstof user.phone "Not set" %}
+                </li>
+                <li class="list-group-item">
+                    <i class="bi bi-building me-2 text-muted"></i>
+                    {{ student.department.name|default:"N/A" }}
+                </li>
+                <li class="list-group-item">
+                    <i class="bi bi-calendar me-2 text-muted"></i>
+                    Admission: {{ student.admission_date|date:"d M Y" }}
+                </li>
+            </ul>
+        </div>
+
+        <div class="card shadow-sm mt-3">
+            <div class="card-body text-center">
+                <a href="{% url 'password_change' %}" class="btn btn-outline-warning w-100">
+                    <i class="bi bi-key me-2"></i>Change Password
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Update Profile Form -->
+    <div class="col-md-8 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0"><i class="bi bi-pencil me-2 text-primary"></i>Update Profile</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="first_name" class="form-label fw-bold">First Name</label>
+                            <input type="text" name="first_name" id="first_name" class="form-control"
+                                value="{{ user.first_name }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="last_name" class="form-label fw-bold">Last Name</label>
+                            <input type="text" name="last_name" id="last_name" class="form-control"
+                                value="{{ user.last_name }}" required>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="email" class="form-label fw-bold">Email</label>
+                            <input type="email" name="email" id="email" class="form-control" value="{% firstof user.email '' %}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="phone" class="form-label fw-bold">Phone</label>
+                            <input type="text" name="phone" id="phone" class="form-control"
+                                value="{% firstof user.phone '' %}" placeholder="Enter phone number">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="profile_image" class="form-label fw-bold">Profile Image</label>
+                        <input type="file" name="profile_image" id="profile_image" class="form-control"
+                            accept="image/*">
+                        {% if user.profile_image %}
+                        <small class="text-muted">Current: {{ user.profile_image.name }}</small>
+                        {% endif %}
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                        <i class="bi bi-save me-2"></i>Update Profile
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Academic Info (read-only) -->
+        <div class="card shadow-sm mt-3">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0"><i class="bi bi-mortarboard me-2 text-success"></i>Academic Info</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label text-muted small mb-0">Enrollment No</label>
+                        <p class="fw-bold mb-0">{{ student.enrollment_no }}</p>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label text-muted small mb-0">Department</label>
+                        <p class="fw-bold mb-0">{{ student.department.name }}</p>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label text-muted small mb-0">Current Semester</label>
+                        <p class="fw-bold mb-0">Semester {{ student.semester }}</p>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label text-muted small mb-0">Admission Date</label>
+                        <p class="fw-bold mb-0">{{ student.admission_date|date:"d M Y" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

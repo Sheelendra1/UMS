@@ -1,50 +1,129 @@
-{% extends 'base.html' %}
+{% extends 'student/base_student.html' %}
 {% block title %}Student Dashboard | UMS{% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h1 class="h2">Student Dashboard</h1>
-    <span class="text-muted">Welcome, {{ student.user.get_full_name }}</span>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <a href="{% url 'download_id_card_pdf' %}" target="_blank" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-person-badge"></i> Download ID Card
+            </a>
+        </div>
+        <span class="text-muted align-self-center ms-2 d-none d-md-block">Welcome, {{ student.user.get_full_name }}</span>
+    </div>
 </div>
 
-<!-- Stats -->
+<!-- Stats Cards -->
 <div class="row mb-4">
-    <div class="col-md-4">
-        <div class="card text-white bg-info mb-3 h-100">
-            <div class="card-header">Attendance</div>
-            <div class="card-body text-center">
-                <h2 class="display-4 fw-bold">{{ attendance_percentage }}%</h2>
-                <p class="card-text mb-0">{{ present_attendance }} / {{ total_attendance }} Classes</p>
+    <div class="col-md-3">
+        <div class="card text-white bg-primary shadow-sm h-100">
+            <div class="card-body">
+                <i class="bi bi-book fs-1 float-end opacity-50"></i>
+                <h6 class="card-title text-uppercase opacity-75">Enrolled Courses</h6>
+                <h2 class="display-5 fw-bold mb-0">{{ enrolled_count }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-info shadow-sm h-100">
+            <div class="card-body">
+                <i class="bi bi-calendar-check fs-1 float-end opacity-50"></i>
+                <h6 class="card-title text-uppercase opacity-75">Attendance</h6>
+                <h2 class="display-5 fw-bold mb-0">{{ attendance_percentage }}%</h2>
                 <div class="progress mt-2" style="height: 5px;">
-                    <div class="progress-bar bg-white" role="progressbar"
-                        style="width: {{ attendance_percentage|default:0 }}%;">
+                    <div class="progress-bar bg-white" role="progressbar" style="width: {{ attendance_percentage }}%;">
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card text-white {% if pending_dues > 0 %}bg-danger{% else %}bg-success{% endif %} mb-3 h-100">
-            <div class="card-header">Fee Status</div>
-            <div class="card-body text-center">
-                <h3 class="card-title fw-bold">
+    <div class="col-md-3">
+        <div class="card text-white {% if pending_dues > 0 %}bg-danger{% else %}bg-success{% endif %} shadow-sm h-100">
+            <div class="card-body">
+                <i class="bi bi-cash-coin fs-1 float-end opacity-50"></i>
+                <h6 class="card-title text-uppercase opacity-75">Fee Status</h6>
+                <h3 class="fw-bold mb-0">
                     {% if pending_dues > 0 %}
-                    ${{ pending_dues }} Due
+                    ₹{{ pending_dues }} Due
                     {% else %}
-                    Cleared
+                    Cleared ✓
                     {% endif %}
                 </h3>
-                <p class="card-text">Paid: ${{ total_paid }} / Receivable: ${{ total_payable }}</p>
             </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card bg-light border-primary mb-3 h-100">
-            <div class="card-header text-primary border-primary">Academic Info</div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning shadow-sm h-100">
             <div class="card-body">
-                <p class="mb-1"><strong>Enrolled:</strong> {{ student.admission_date }}</p>
-                <p class="mb-1"><strong>Sem/Year:</strong> {{ student.semester }}</p>
-                <p class="mb-0"><strong>Dept:</strong> {{ student.department.name }}</p>
+                <i class="bi bi-file-earmark-text fs-1 float-end opacity-50"></i>
+                <h6 class="card-title text-uppercase opacity-75">Upcoming Exams</h6>
+                <h2 class="display-5 fw-bold mb-0">{{ upcoming_exams_count }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Enrolled Courses -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-book me-2 text-primary"></i>Enrolled Courses</h5>
+                <a href="{% url 'student_my_courses' %}" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    {% for course in courses %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ course.name }}</strong>
+                            <br><small class="text-muted">{{ course.code }} &middot; {{ course.credits }}
+                                Credits</small>
+                        </div>
+                        <span class="badge bg-primary rounded-pill">Sem {{ course.semester }}</span>
+                    </div>
+                    {% empty %}
+                    <div class="list-group-item text-center text-muted py-4">No courses enrolled yet.</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upcoming Exams -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0"><i class="bi bi-calendar-event me-2 text-warning"></i>Upcoming Exams</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Date</th>
+                                <th>Course</th>
+                                <th>Type</th>
+                                <th>Total Marks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for exam in upcoming_exams %}
+                            <tr>
+                                <td><span class="badge bg-warning text-dark">{{ exam.date|date:"d M Y" }}</span></td>
+                                <td>{{ exam.course.name }}</td>
+                                <td>{{ exam.get_exam_type_display }}</td>
+                                <td>{{ exam.total_marks }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-4">No upcoming exams.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -52,17 +131,18 @@
 
 <!-- Recent Results -->
 <div class="card shadow-sm mb-4">
-    <div class="card-header bg-white py-3">
-        <h5 class="mb-0"><i class="bi bi-trophy me-2 text-warning"></i>Recent Results</h5>
+    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="bi bi-trophy me-2 text-success"></i>Recent Results</h5>
+        <a href="{% url 'student_my_results' %}" class="btn btn-sm btn-outline-success">View All</a>
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table table-hover mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th>Exam Date</th>
+                        <th>Date</th>
                         <th>Course</th>
-                        <th>Exam Type</th>
+                        <th>Exam</th>
                         <th>Marks</th>
                         <th>Status</th>
                     </tr>
@@ -70,7 +150,7 @@
                 <tbody>
                     {% for result in recent_results %}
                     <tr>
-                        <td>{{ result.exam.date }}</td>
+                        <td>{{ result.exam.date|date:"d M Y" }}</td>
                         <td>{{ result.exam.course.name }}</td>
                         <td>{{ result.exam.get_exam_type_display }}</td>
                         <td><strong>{{ result.marks_obtained }}</strong> / {{ result.exam.total_marks }}</td>
@@ -84,11 +164,46 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="5" class="text-center text-muted py-4">No recent results found.</td>
+                        <td colspan="5" class="text-center text-muted py-4">No results available yet.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-white py-3">
+        <h5 class="mb-0"><i class="bi bi-lightning me-2 text-warning"></i>Quick Actions</h5>
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-3">
+                <a href="{% url 'student_my_attendance' %}" class="btn btn-outline-info w-100 py-3">
+                    <i class="bi bi-calendar-check fs-4 d-block mb-1"></i>
+                    View Attendance
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="{% url 'student_my_results' %}" class="btn btn-outline-success w-100 py-3">
+                    <i class="bi bi-trophy fs-4 d-block mb-1"></i>
+                    View Results
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="{% url 'student_fee_status' %}" class="btn btn-outline-danger w-100 py-3">
+                    <i class="bi bi-cash-coin fs-4 d-block mb-1"></i>
+                    Check Fees
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="{% url 'student_notices' %}" class="btn btn-outline-primary w-100 py-3">
+                    <i class="bi bi-megaphone fs-4 d-block mb-1"></i>
+                    Notices
+                </a>
+            </div>
         </div>
     </div>
 </div>

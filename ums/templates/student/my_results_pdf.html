@@ -1,0 +1,133 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Student Transcript</title>
+    <style>
+        @page {
+            size: a4 portrait;
+            margin: 2cm;
+            @frame footer_frame {           /* Another static Frame */
+                -pdf-frame-content: footerContent;
+                bottom: 1cm;
+                margin-left: 2cm;
+                margin-right: 2cm;
+                height: 1cm;
+            }
+        }
+        body {
+            font-family: Helvetica, sans-serif;
+            font-size: 12pt;
+        }
+        h1, h2, h3 {
+            text-align: center;
+            color: #333;
+        }
+        .header {
+            margin-bottom: 30px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+        }
+        .student-info {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .student-info td {
+            padding: 5px;
+            vertical-align: top;
+        }
+        .label {
+            font-weight: bold;
+            width: 150px;
+        }
+        table.results {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        table.results th, table.results td {
+            border: 1px solid #666;
+            padding: 8px;
+            text-align: center;
+        }
+        table.results th {
+            background-color: #eee;
+            font-weight: bold;
+        }
+        .summary {
+            margin-top: 20px;
+            text-align: right;
+            font-weight: bold;
+        }
+        .footer {
+            text-align: center;
+            font-size: 10pt;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>University Management System</h1>
+        <h3>Official Transcript / Mark Sheet</h3>
+    </div>
+
+    <table class="student-info">
+        <tr>
+            <td class="label">Name:</td>
+            <td>{{ student.user.get_full_name }}</td>
+            <td class="label">Enrollment No:</td>
+            <td>{{ student.enrollment_no }}</td>
+        </tr>
+        <tr>
+            <td class="label">Department:</td>
+            <td>{{ student.department.name }}</td>
+            <td class="label">Batch:</td>
+            <td>{{ student.admission_date|date:"Y" }}</td>
+        </tr>
+    </table>
+
+    <table class="results">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Course</th>
+                <th>Exam</th>
+                <th>Marks Obtained</th>
+                <th>Attributes</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for result in results %}
+            <tr>
+                <td>{{ result.exam.date|date:"d M Y" }}</td>
+                <td>{{ result.exam.course.name }} ({{ result.exam.course.code }})</td>
+                <td>{{ result.exam.name }}</td>
+                <td>{{ result.marks_obtained }} / {{ result.exam.total_marks }}</td>
+                <td>
+                    {% if result.is_passed %}
+                        <span style="color: green;">Pass</span>
+                    {% else %}
+                        <span style="color: red;">Fail</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No results found for this student.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="summary">
+        <p>Total Marks: {{ total_obtained }} / {{ total_max }}</p>
+        <p>Overall Percentage: {{ percentage }}%</p>
+    </div>
+
+    <div id="footerContent" class="footer">
+        Generated on {{ generated_at|date:"d F Y H:i" }} | UMS System
+    </div>
+</body>
+</html>

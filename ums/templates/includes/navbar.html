@@ -10,8 +10,8 @@
                     <span class="nav-link active fw-bold">Welcome back, {{ user.username|title }}!</span>
                 </li>
             </ul>
-            <form class="d-flex">
-                <input class="form-control me-2" type="search" placeholder="Search..." aria-label="Search">
+            <form class="d-flex" action="{% url 'global_search' %}" method="get">
+                <input class="form-control me-2" type="search" name="q" placeholder="Search (Students/Faculty/Courses)..." aria-label="Search" value="{{ request.GET.q }}">
                 <button class="btn btn-outline-success" type="submit">Search</button>
             </form>
         </div>

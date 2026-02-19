@@ -10,7 +10,7 @@
 
 <div class="row">
     <div class="col-md-8">
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="row g-3">
                 <div class="col-md-6">
@@ -44,6 +44,10 @@
                 <div class="col-md-6">
                     <label for="joiningDate" class="form-label">Joining Date</label>
                     <input type="date" class="form-control" id="joiningDate" name="joining_date" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="profileImage" class="form-label">Profile Image</label>
+                    <input type="file" class="form-control" id="profileImage" name="profile_image" accept="image/*">
                 </div>
 
                 <div class="col-12">

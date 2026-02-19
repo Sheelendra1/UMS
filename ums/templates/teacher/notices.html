@@ -1,0 +1,79 @@
+{% extends 'teacher/base_teacher.html' %}
+{% block title %}Notices | UMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Notices</h1>
+    <a href="{% url 'teacher_post_notice' %}" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-1"></i>Post New Notice
+    </a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Date</th>
+                        <th>Title</th>
+                        <th>Audience</th>
+                        <th>Course</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for notice in notices %}
+                    <tr>
+                        <td><small class="text-muted">{{ notice.created_at|date:"d M Y, h:i A" }}</small></td>
+                        <td><strong>{{ notice.title }}</strong></td>
+                        <td><span class="badge bg-info">{{ notice.get_target_audience_display }}</span></td>
+                        <td>
+                            {% if notice.target_course %}
+                            <span class="badge bg-secondary">{{ notice.target_course.code }}</span>
+                            {% else %}
+                            <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                                data-bs-target="#noticeModal{{ notice.id }}">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- Notice Detail Modal -->
+                    <div class="modal fade" id="noticeModal{{ notice.id }}" tabindex="-1">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">{{ notice.title }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>{{ notice.description|linebreaks }}</p>
+                                    {% if notice.attachment %}
+                                    <a href="{{ notice.attachment.url }}" class="btn btn-sm btn-outline-secondary"
+                                        target="_blank">
+                                        <i class="bi bi-paperclip me-1"></i>View Attachment
+                                    </a>
+                                    {% endif %}
+                                </div>
+                                <div class="modal-footer text-muted">
+                                    <small>Posted on {{ notice.created_at|date:"d M Y, h:i A" }}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-4">No notices posted yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

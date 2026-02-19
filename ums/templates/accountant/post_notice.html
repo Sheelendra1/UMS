@@ -1,0 +1,42 @@
+{% extends 'accountant/base_accountant.html' %}
+{% block title %}Post Notice | UMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Post Notice</h1>
+    <a href="{% url 'accountant_notices' %}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>Back
+    </a>
+</div>
+
+<div class="card shadow-sm" style="max-width: 700px;">
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="title" class="form-label fw-bold">Title</label>
+                <input type="text" name="title" id="title" class="form-control" required placeholder="Notice title">
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label fw-bold">Description</label>
+                <textarea name="description" id="description" class="form-control" rows="5" required
+                    placeholder="Write notice content..."></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="target_audience" class="form-label fw-bold">Target Audience</label>
+                <select name="target_audience" id="target_audience" class="form-select">
+                    <option value="ALL">All</option>
+                    <option value="STUDENT">Students</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="attachment" class="form-label fw-bold">Attachment (optional)</label>
+                <input type="file" name="attachment" id="attachment" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg w-100">
+                <i class="bi bi-send me-2"></i>Post Notice
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

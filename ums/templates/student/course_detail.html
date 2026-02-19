@@ -1,0 +1,157 @@
+{% extends 'student/base_student.html' %}
+{% block title %}{{ course.name }} | UMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <div>
+        <h1 class="h2">{{ course.name }}</h1>
+        <span class="text-muted">{{ course.code }} &middot; Semester {{ course.semester }} &middot; {{ course.credits }}
+            Credits</span>
+    </div>
+    <a href="{% url 'student_my_courses' %}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>Back to Courses
+    </a>
+</div>
+
+<div class="row">
+    <!-- Course Info -->
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h6 class="mb-0"><i class="bi bi-info-circle me-2"></i>Course Info</h6>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong>Code:</strong> {{ course.code }}</li>
+                <li class="list-group-item"><strong>Department:</strong> {{ course.department.name }}</li>
+                <li class="list-group-item"><strong>Semester:</strong> {{ course.semester }}</li>
+                <li class="list-group-item"><strong>Credits:</strong> {{ course.credits }}</li>
+                <li class="list-group-item"><strong>Total Students:</strong> {{ course.students.count }}</li>
+            </ul>
+        </div>
+
+        {% if course.faculty %}
+        <div class="card shadow-sm mt-3">
+            <div class="card-header bg-white">
+                <h6 class="mb-0"><i class="bi bi-person-badge me-2 text-purple"></i>Teacher</h6>
+            </div>
+            <div class="card-body text-center">
+                <img src="https://ui-avatars.com/api/?name={{ course.faculty.user.get_full_name|urlencode }}&size=80&background=6f42c1&color=fff"
+                    alt="" class="rounded-circle mb-2" width="80" height="80">
+                <h6 class="mb-1">{{ course.faculty.user.get_full_name }}</h6>
+                <small class="text-muted d-block">{{ course.faculty.designation }}</small>
+                {% if course.faculty.user.email %}
+                <a href="mailto:{{ course.faculty.user.email }}" class="btn btn-sm btn-outline-primary mt-2">
+                    <i class="bi bi-envelope me-1"></i>{{ course.faculty.user.email }}
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Attendance & Schedule -->
+    <div class="col-md-8">
+        <!-- Attendance for this course -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0"><i class="bi bi-calendar-check me-2 text-info"></i>My Attendance</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-4">
+                        <h3 class="fw-bold text-primary">{{ attendance.total }}</h3>
+                        <small class="text-muted">Total Classes</small>
+                    </div>
+                    <div class="col-4">
+                        <h3 class="fw-bold text-success">{{ attendance.present }}</h3>
+                        <small class="text-muted">Present</small>
+                    </div>
+                    <div class="col-4">
+                        <h3 class="fw-bold text-danger">{{ attendance.absent }}</h3>
+                        <small class="text-muted">Absent</small>
+                    </div>
+                </div>
+                <div class="progress mt-3" style="height: 10px;">
+                    <div class="progress-bar {% if attendance.pct >= 75 %}bg-success{% elif attendance.pct >= 50 %}bg-warning{% else %}bg-danger{% endif %}"
+                        role="progressbar" style="width: {{ attendance.pct }}%;"></div>
+                </div>
+                <p class="text-center mt-2 mb-0"><strong>{{ attendance.pct }}%</strong> Attendance</p>
+            </div>
+        </div>
+
+        <!-- Results for this course -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0"><i class="bi bi-trophy me-2 text-warning"></i>Results</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Date</th>
+                                <th>Exam Type</th>
+                                <th>Marks</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for r in results %}
+                            <tr>
+                                <td>{{ r.exam.date|date:"d M Y" }}</td>
+                                <td>{{ r.exam.get_exam_type_display }}</td>
+                                <td><strong>{{ r.marks_obtained }}</strong> / {{ r.exam.total_marks }}</td>
+                                <td>
+                                    {% if r.marks_obtained >= 40 %}
+                                    <span class="badge bg-success">Pass</span>
+                                    {% else %}
+                                    <span class="badge bg-danger">Fail</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-4">No results yet.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timetable for this course -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0"><i class="bi bi-clock me-2 text-success"></i>Class Schedule</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Day</th>
+                                <th>Time</th>
+                                <th>Room</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for slot in schedule %}
+                            <tr>
+                                <td><strong>{{ slot.day_of_week }}</strong></td>
+                                <td>{{ slot.start_time|time:"h:i A" }} – {{ slot.end_time|time:"h:i A" }}</td>
+                                <td><span class="badge bg-secondary">{{ slot.room_number }}</span></td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center text-muted py-4">No schedule available.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

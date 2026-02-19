@@ -6,63 +6,80 @@
     <a href="{% url 'course_list' %}" class="btn btn-sm btn-outline-secondary">Back to List</a>
 </div>
 <div class="row">
-    <div class="col-md-6">
-        <form method="post">
-            {% csrf_token %}
-            <div class="mb-3">
-                <label class="form-label">Course Name</label>
-                <input type="text" name="name" class="form-control" value="{{ form.name.value|default:'' }}" required>
+    <div class="col-md-7">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="id_name" class="form-label fw-semibold">Course Name</label>
+                        <input type="text" name="name" class="form-control" id="id_name"
+                            value="{{ form.name.value|default:'' }}" required>
+                        {% if form.name.errors %}<div class="text-danger small">{{ form.name.errors }}</div>{% endif %}
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="id_code" class="form-label fw-semibold">Course Code</label>
+                            <input type="text" name="code" class="form-control" id="id_code"
+                                value="{{ form.code.value|default:'' }}" required>
+                            {% if form.code.errors %}<div class="text-danger small">{{ form.code.errors }}</div>{% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="id_semester" class="form-label fw-semibold">Semester</label>
+                            <input type="number" name="semester" class="form-control" id="id_semester"
+                                value="{{ form.semester.value|default:'' }}" min="1" max="10" required>
+                            {% if form.semester.errors %}<div class="text-danger small">{{ form.semester.errors }}</div>{% endif %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="id_credits" class="form-label fw-semibold">Credits</label>
+                            <input type="number" name="credits" class="form-control" id="id_credits"
+                                value="{{ form.credits.value|default:'' }}" min="1" required>
+                            {% if form.credits.errors %}<div class="text-danger small">{{ form.credits.errors }}</div>{% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="id_capacity" class="form-label fw-semibold">Capacity</label>
+                            <input type="number" name="capacity" class="form-control" id="id_capacity"
+                                value="{{ form.capacity.value|default:'60' }}" min="1" required>
+                            {% if form.capacity.errors %}<div class="text-danger small">{{ form.capacity.errors }}</div>{% endif %}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_department" class="form-label fw-semibold">Department</label>
+                        <select name="department" class="form-select" id="id_department" required>
+                            <option value="">---------</option>
+                            {% for choice in form.department.field.queryset %}
+                            <option value="{{ choice.pk }}"
+                                {% if form.instance.department_id == choice.pk %}selected{% endif %}>
+                                {{ choice }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        {% if form.department.errors %}<div class="text-danger small">{{ form.department.errors }}</div>{% endif %}
+                    </div>
+                    <div class="mb-4">
+                        <label for="id_faculty" class="form-label fw-semibold">Assigned Faculty</label>
+                        <select name="faculty" class="form-select" id="id_faculty">
+                            <option value="">---------</option>
+                            {% for choice in form.faculty.field.queryset %}
+                            <option value="{{ choice.pk }}"
+                                {% if form.instance.faculty_id == choice.pk %}selected{% endif %}>
+                                {{ choice }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        {% if form.faculty.errors %}<div class="text-danger small">{{ form.faculty.errors }}</div>{% endif %}
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-1"></i>Save Course
+                        </button>
+                        <a href="{% url 'course_list' %}" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
             </div>
-            <div class="mb-3">
-                <label class="form-label">Code</label>
-                <input type="text" name="code" class="form-control" value="{{ form.code.value|default:'' }}" required>
-            </div>
-
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Department</label>
-                    <select name="department" class="form-select" required>
-                        <option value="">---------</option>
-                        {% for choice in form.department.field.queryset %}
-                        <option value="{{ choice.pk }}" {% if
-                            form.department.value|stringformat:"s"==choice.pk|stringformat:"s" %}selected{% endif %}>{{
-                            choice }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Assigned Faculty</label>
-                    <select name="faculty" class="form-select">
-                        <option value="">---------</option>
-                        {% for choice in form.faculty.field.queryset %}
-                        <option value="{{ choice.pk }}" {% if
-                            form.faculty.value|stringformat:"s"==choice.pk|stringformat:"s" %}selected{% endif %}>{{
-                            choice }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-4 mb-3">
-                    <label class="form-label">Semester</label>
-                    <input type="number" name="semester" class="form-control"
-                        value="{{ form.semester.value|default:'' }}" required>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label class="form-label">Credits</label>
-                    <input type="number" name="credits" class="form-control" value="{{ form.credits.value|default:'' }}"
-                        required>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label class="form-label">Capacity</label>
-                    <input type="number" name="capacity" class="form-control"
-                        value="{{ form.capacity.value|default:'50' }}" required>
-                </div>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Save Course</button>
-        </form>
+        </div>
     </div>
 </div>
 {% endblock %}

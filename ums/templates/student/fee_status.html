@@ -1,0 +1,133 @@
+{% extends 'student/base_student.html' %}
+{% block title %}Fee Status | UMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Fee Status</h1>
+</div>
+
+<!-- Fee Summary -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card border-primary shadow-sm h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-cash-stack fs-1 text-primary mb-2"></i>
+                <h6 class="text-uppercase text-muted">Total Fee</h6>
+                <h2 class="fw-bold text-primary">₹{{ total_payable|floatformat:0 }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-success shadow-sm h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-check-circle fs-1 text-success mb-2"></i>
+                <h6 class="text-uppercase text-muted">Amount Paid</h6>
+                <h2 class="fw-bold text-success">₹{{ total_paid|floatformat:0 }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-{% if pending_dues > 0 %}danger{% else %}success{% endif %} shadow-sm h-100">
+            <div class="card-body text-center">
+                <i
+                    class="bi bi-exclamation-circle fs-1 text-{% if pending_dues > 0 %}danger{% else %}success{% endif %} mb-2"></i>
+                <h6 class="text-uppercase text-muted">Pending Dues</h6>
+                <h2 class="fw-bold text-{% if pending_dues > 0 %}danger{% else %}success{% endif %}">
+                    {% if pending_dues > 0 %}₹{{ pending_dues|floatformat:0 }}{% else %}Nil ✓{% endif %}
+                </h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Fee Breakdown -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-white py-3">
+        <h5 class="mb-0"><i class="bi bi-receipt me-2 text-primary"></i>Fee Structure</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Department</th>
+                        <th>Semester</th>
+                        <th class="text-end">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fee in fee_structures %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ fee.department.name }}</td>
+                        <td>Semester {{ fee.semester }}</td>
+                        <td class="text-end fw-bold">₹{{ fee.amount|floatformat:0 }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-4">No fee structure available.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                {% if fee_structures %}
+                <tfoot class="table-light">
+                    <tr>
+                        <td colspan="3" class="text-end fw-bold">Total:</td>
+                        <td class="text-end fw-bold text-primary">₹{{ total_payable|floatformat:0 }}</td>
+                    </tr>
+                </tfoot>
+                {% endif %}
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Payment History -->
+<div class="card shadow-sm">
+    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="bi bi-clock-history me-2 text-success"></i>Payment History</h5>
+        <span class="badge bg-success">{{ payments|length }} Payment{{ payments|length|pluralize }}</span>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th class="text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pay in payments %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ pay.payment_date|date:"d M Y" }}</td>
+                        <td class="fw-bold">₹{{ pay.amount_paid|floatformat:0 }}</td>
+                        <td>
+                            {% if pay.status == 'PAID' %}
+                            <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Paid</span>
+                            {% else %}
+                            <span class="badge bg-warning text-dark"><i class="bi bi-hourglass me-1"></i>Pending</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <a href="{% url 'download_receipt_pdf' pay.id %}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-file-earmark-pdf"></i> Receipt
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-4">No payment records found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

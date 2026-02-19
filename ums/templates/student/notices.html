@@ -1,0 +1,64 @@
+{% extends 'student/base_student.html' %}
+{% block title %}Notices | UMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Notices</h1>
+</div>
+
+<!-- Filter Tabs -->
+<ul class="nav nav-tabs mb-4" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link {% if not filter_type or filter_type == 'all' %}active{% endif %}" href="?type=all">
+            <i class="bi bi-megaphone me-1"></i>All Notices
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if filter_type == 'general' %}active{% endif %}" href="?type=general">
+            <i class="bi bi-globe me-1"></i>General
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if filter_type == 'course' %}active{% endif %}" href="?type=course">
+            <i class="bi bi-book me-1"></i>Course-specific
+        </a>
+    </li>
+</ul>
+
+{% for notice in notices %}
+<div class="card shadow-sm mb-3">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <h5 class="card-title mb-1">
+                    {% if notice.target_course %}
+                    <span class="badge bg-info text-dark me-2">{{ notice.target_course.code }}</span>
+                    {% else %}
+                    <span class="badge bg-secondary me-2">General</span>
+                    {% endif %}
+                    {{ notice.title }}
+                </h5>
+                <small class="text-muted">
+                    <i class="bi bi-person me-1"></i>Posted by: {% firstof notice.posted_by.get_full_name notice.posted_by.username %} &middot;
+                    <i class="bi bi-calendar me-1"></i>{{ notice.created_at|date:"d M Y, h:i A" }}
+                </small>
+            </div>
+            {% if notice.attachment %}
+            <a href="{{ notice.attachment.url }}" class="btn btn-sm btn-outline-primary" target="_blank"
+                title="Download">
+                <i class="bi bi-download"></i>
+            </a>
+            {% endif %}
+        </div>
+        <hr>
+        <p class="card-text">{{ notice.description }}</p>
+    </div>
+</div>
+{% empty %}
+<div class="alert alert-info text-center py-5">
+    <i class="bi bi-bell-slash fs-1 d-block mb-2"></i>
+    <h5>No Notices</h5>
+    <p class="mb-0 text-muted">There are no notices to display at the moment.</p>
+</div>
+{% endfor %}
+{% endblock %}

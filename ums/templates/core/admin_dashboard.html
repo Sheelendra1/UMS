@@ -18,7 +18,7 @@
 </div>
 
 <!-- Stats Cards -->
-<div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4 mb-4">
+<div class="row row-cols-1 row-cols-md-2 row-cols-xl-5 g-4 mb-4">
     <div class="col">
         <div class="card h-100 shadow-sm border-left-primary">
             <div class="card-body">
@@ -79,6 +79,21 @@
             </div>
         </div>
     </div>
+    <div class="col">
+        <div class="card h-100 shadow-sm border-left-secondary">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">Avg Attendance</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ attendance_percentage }}%</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-percent fs-2 text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="row mb-4">
@@ -117,12 +132,14 @@
             </div>
             <div class="card-body">
                 <div class="d-grid gap-2">
-                    <button class="btn btn-primary" type="button"><i class="bi bi-person-plus"></i> Add Student</button>
-                    <button class="btn btn-primary" type="button"><i class="bi bi-person-plus-fill"></i> Add
-                        Teacher</button>
-                    <button class="btn btn-success" type="button"><i class="bi bi-plus-circle"></i> Create
-                        Course</button>
-                    <button class="btn btn-info" type="button"><i class="bi bi-megaphone"></i> Post Notice</button>
+                    <a href="{% url 'add_student' %}" class="btn btn-primary"><i class="bi bi-person-plus"></i> Add
+                        Student</a>
+                    <a href="{% url 'add_faculty' %}" class="btn btn-primary"><i class="bi bi-person-plus-fill"></i> Add
+                        Teacher</a>
+                    <a href="{% url 'course_add' %}" class="btn btn-success"><i class="bi bi-plus-circle"></i> Create
+                        Course</a>
+                    <a href="{% url 'notice_add' %}" class="btn btn-info"><i class="bi bi-megaphone"></i> Post
+                        Notice</a>
                 </div>
             </div>
         </div>

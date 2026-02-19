@@ -1,0 +1,145 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Student ID Card</title>
+    <style>
+        @page {
+            size: a4 portrait;
+            margin: 1cm;
+        }
+        body {
+            font-family: Helvetica, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 100%;
+            text-align: center;
+            padding-top: 50px;
+        }
+        .id-card {
+            width: 8.6cm;
+            height: 5.4cm;
+            border: 1px solid #333;
+            border-radius: 10px;
+            margin: 0 auto;
+            position: relative;
+            background-color: #f9f9f9;
+            padding: 10px;
+        }
+        .header {
+            background-color: #0d6efd;
+            color: white;
+            padding: 5px;
+            border-radius: 8px 8px 0 0;
+            margin: -10px -10px 10px -10px;
+            text-align: center;
+        }
+        .header h3 {
+            margin: 0;
+            font-size: 14pt;
+        }
+        .header p {
+            margin: 0;
+            font-size: 8pt;
+        }
+        .photo-section {
+            float: left;
+            width: 2.5cm;
+            height: 3cm;
+            margin-right: 10px;
+            border: 1px solid #ddd;
+            background-color: #eee;
+        }
+        .photo-section img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .details-section {
+            float: left;
+            width: 5.5cm;
+            text-align: left;
+            font-size: 10pt;
+        }
+        .field {
+            margin-bottom: 2px;
+        }
+        .label {
+            font-weight: bold;
+            font-size: 8pt;
+            color: #555;
+        }
+        .value {
+            font-weight: bold;
+            color: #000;
+        }
+        .footer {
+            position: absolute;
+            bottom: 5px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 7pt;
+            color: #777;
+            border-top: 1px solid #ddd;
+            margin-top: 5px;
+            padding-top: 2px;
+        }
+        .barcode {
+            margin-top: 5px;
+            height: 20px;
+            background-color: #333; /* Placeholder for barcode */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Your Generated ID Card</h2>
+        <br>
+        <div class="id-card">
+            <div class="header">
+                <h3>UMS University</h3>
+                <p>Student Identity Card</p>
+            </div>
+            
+            <div class="photo-section">
+                {% if student.user.profile_image %}
+                    <img src="{{ student.user.profile_image.path }}" alt="Photo">
+                {% else %}
+                    <!-- Placeholder -->
+                    <div style="text-align: center; padding-top: 1cm; color: #999;">No Photo</div>
+                {% endif %}
+            </div>
+
+            <div class="details-section">
+                <div class="field">
+                    <span class="value" style="font-size: 12pt; display: block; margin-bottom: 4px;">{{ student.user.get_full_name|upper }}</span>
+                </div>
+                <div class="field">
+                    <span class="label">ID / ROLL NO:</span><br>
+                    <span class="value">{{ student.enrollment_no }}</span>
+                </div>
+                <div class="field">
+                    <span class="label">DEPARTMENT:</span><br>
+                    <span class="value">{{ student.department.name }}</span>
+                </div>
+                <div class="field">
+                    <span class="label">VALID UNTIL:</span><br>
+                    <span class="value">{{ expire_date|date:"F Y" }}</span>
+                </div>
+            </div>
+
+            <div class="footer">
+                <p>If found, please return to UMS Administration Office.</p>
+                <p>Generated: {{ generated_at|date:"Y-m-d" }}</p>
+            </div>
+        </div>
+        
+        <br><br>
+        <p><i>Please print this page, cut out the ID card, and laminate it.</i></p>
+    </div>
+</body>
+</html>

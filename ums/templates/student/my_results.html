@@ -1,0 +1,148 @@
+{% extends 'student/base_student.html' %}
+{% block title %}My Results | UMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">My Results</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'download_results_pdf' %}" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-file-earmark-pdf"></i> Download Transcription
+        </a>
+    </div>
+</div>
+
+<!-- Summary Cards -->
+{% if summary %}
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-center border-primary shadow-sm">
+            <div class="card-body">
+                <h3 class="fw-bold text-primary">{{ summary.total_exams }}</h3>
+                <small class="text-muted">Total Exams</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center border-success shadow-sm">
+            <div class="card-body">
+                <h3 class="fw-bold text-success">{{ summary.avg_pct|floatformat:1 }}%</h3>
+                <small class="text-muted">Average Score</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center border-warning shadow-sm">
+            <div class="card-body">
+                <h3 class="fw-bold text-warning">{{ summary.highest|floatformat:1 }}</h3>
+                <small class="text-muted">Highest Marks</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center border-info shadow-sm">
+            <div class="card-body">
+                <h3 class="fw-bold text-info">{{ summary.passed }} / {{ summary.total_exams }}</h3>
+                <small class="text-muted">Passed</small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Filter -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-6">
+                <label for="course" class="form-label fw-bold">Filter by Course</label>
+                <select name="course" id="course" class="form-select">
+                    <option value="">-- All Courses --</option>
+                    {% for course in courses %}
+                    <option value="{{ course.id }}" {% if selected_course_id == course.id %}selected{% endif %}>
+                        {{ course.code }} – {{ course.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="exam_type" class="form-label fw-bold">Exam Type</label>
+                <select name="exam_type" id="exam_type" class="form-select">
+                    <option value="">-- All --</option>
+                    <option value="MID" {% if selected_exam_type == 'MID' %}selected{% endif %}>Mid Term</option>
+                    <option value="END" {% if selected_exam_type == 'END' %}selected{% endif %}>End Term</option>
+                    <option value="QUIZ" {% if selected_exam_type == 'QUIZ' %}selected{% endif %}>Quiz</option>
+                    <option value="ASSIGNMENT" {% if selected_exam_type == 'ASSIGNMENT' %}selected{% endif %}>Assignment
+                    </option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-funnel me-1"></i>Filter
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Results Table -->
+<div class="card shadow-sm">
+    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="bi bi-trophy me-2 text-warning"></i>Exam Results</h5>
+        <span class="badge bg-primary">{{ results|length }} Result{{ results|length|pluralize }}</span>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Date</th>
+                        <th>Course</th>
+                        <th>Exam Type</th>
+                        <th class="text-center">Marks Obtained</th>
+                        <th class="text-center">Total Marks</th>
+                        <th class="text-center">Percentage</th>
+                        <th class="text-center">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in results %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ r.exam.date|date:"d M Y" }}</td>
+                        <td>
+                            <strong>{{ r.exam.course.name }}</strong>
+                            <br><small class="text-muted">{{ r.exam.course.code }}</small>
+                        </td>
+                        <td><span class="badge bg-info text-dark">{{ r.exam.get_exam_type_display }}</span></td>
+                        <td class="text-center fw-bold">{{ r.marks_obtained }}</td>
+                        <td class="text-center">{{ r.exam.total_marks }}</td>
+                        <td class="text-center">
+                            {% widthratio r.marks_obtained r.exam.total_marks 100 as pct %}
+                            <div class="d-flex align-items-center justify-content-center gap-2">
+                                <div class="progress flex-grow-1" style="height: 6px; max-width: 60px;">
+                                    <div class="progress-bar {% if pct >= 75 %}bg-success{% elif pct >= 50 %}bg-warning{% else %}bg-danger{% endif %}"
+                                        style="width: {% widthratio r.marks_obtained r.exam.total_marks 100 %}%;"></div>
+                                </div>
+                                <small>{% widthratio r.marks_obtained r.exam.total_marks 100 %}%</small>
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            {% if r.marks_obtained >= 40 %}
+                            <span class="badge bg-success">Pass</span>
+                            {% else %}
+                            <span class="badge bg-danger">Fail</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center text-muted py-4">No results found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

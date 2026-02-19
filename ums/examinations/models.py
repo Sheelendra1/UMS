@@ -11,9 +11,9 @@ class Exam(models.Model):
     exam_type = models.CharField(max_length=20, choices=ExamType.choices)
     total_marks = models.IntegerField()
     date = models.DateField()
-    start_time = models.TimeField(null=True, blank=True)
-    end_time = models.TimeField(null=True, blank=True)
-    room_number = models.CharField(max_length=20, blank=True)
+    start_time = models.TimeField(blank=True, null=True)
+    end_time = models.TimeField(blank=True, null=True)
+    room_number = models.CharField(max_length=50, blank=True, null=True)
     is_published = models.BooleanField(default=False)
 
     def __str__(self):

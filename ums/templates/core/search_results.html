@@ -1,0 +1,79 @@
+{% extends base_template|default:'base.html' %} 
+
+{% block title %}Search Results | UMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Search Results</h1>
+</div>
+
+{% if query %}
+    <p class="text-muted mb-4">Showing results for: <strong>{{ query }}</strong></p>
+
+    <!-- Students -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-people-fill me-2"></i>Students</h5>
+        </div>
+        <div class="list-group list-group-flush">
+            {% for student in results.students %}
+            <a href="{% url 'public_profile' student.user.username %}" class="list-group-item list-group-item-action">
+                <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1">{{ student.user.get_full_name }} ({{ student.enrollment_no }})</h6>
+                    <small>{{ student.department.name }}</small>
+                </div>
+                <small class="text-muted">Semester {{ student.semester }}</small>
+            </a>
+            {% empty %}
+            <div class="list-group-item text-muted">No students found.</div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Faculty -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0"><i class="bi bi-person-badge-fill me-2"></i>Faculty</h5>
+        </div>
+        <div class="list-group list-group-flush">
+            {% for teacher in results.faculty %}
+            <a href="{% url 'public_profile' teacher.user.username %}" class="list-group-item list-group-item-action">
+                <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1">{{ teacher.user.get_full_name }}</h6>
+                    <small>{{ teacher.department.name }}</small>
+                </div>
+                <small class="text-muted">Professor</small>
+            </a>
+            {% empty %}
+            <div class="list-group-item text-muted">No faculty found.</div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Courses -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-info text-dark">
+            <h5 class="mb-0"><i class="bi bi-book-half me-2"></i>Courses</h5>
+        </div>
+        <div class="list-group list-group-flush">
+            {% for course in results.courses %}
+            <div class="list-group-item">
+                <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1">{{ course.name }} ({{ course.code }})</h6>
+                    <span class="badge bg-secondary">{{ course.department.name }}</span>
+                </div>
+                <small class="text-muted">Semester {{ course.semester }} • {{ course.credits }} Credits</small>
+            </div>
+            {% empty %}
+            <div class="list-group-item text-muted">No courses found.</div>
+            {% endfor %}
+        </div>
+    </div>
+
+{% else %}
+    <div class="alert alert-warning">
+        <i class="bi bi-search me-2"></i> Please enter a search term above.
+    </div>
+{% endif %}
+
+{% endblock %}

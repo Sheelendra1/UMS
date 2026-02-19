@@ -7,6 +7,18 @@
 </div>
 <div class="row">
     <div class="col-md-6">
+        {% if form.errors %}
+        <div class="alert alert-danger">
+            <strong>Please correct the errors below:</strong>
+            <ul class="mb-0 mt-1">
+                {% for field, errors in form.errors.items %}
+                    {% for error in errors %}
+                    <li>{{ field }}: {{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
         <form method="post">
             {% csrf_token %}
             <div class="mb-3">
@@ -14,23 +26,37 @@
                 <select name="student" class="form-select" required>
                     <option value="">---------</option>
                     {% for choice in form.student.field.queryset %}
-                    <option value="{{ choice.pk }}">{{ choice }}</option>
+                    <option value="{{ choice.pk }}" {% if form.student.value|stringformat:"s" == choice.pk|stringformat:"s" %}selected{% endif %}>{{ choice }}</option>
                     {% endfor %}
                 </select>
             </div>
             <div class="mb-3">
-                <label class="form-label">Amount Custom</label>
-                <input type="number" step="0.01" name="amount_paid" class="form-control" required>
+                <label class="form-label">Amount Paid (₹)</label>
+                <input type="number" step="0.01" name="amount_paid" class="form-control" required value="{{ form.amount_paid.value|default:'' }}">
             </div>
             <div class="mb-3">
                 <label class="form-label">Status</label>
-                <select name="status" class="form-select">
+                <select name="status" class="form-select" required>
                     {% for value, label in form.fields.status.choices %}
-                    <option value="{{ value }}">{{ label }}</option>
+                    {% if value %}
+                    <option value="{{ value }}" {% if form.status.value == value %}selected{% endif %}>{{ label }}</option>
+                    {% endif %}
                     {% endfor %}
                 </select>
             </div>
-            <button type="submit" class="btn btn-success">Record Payment</button>
+            <div class="mb-3">
+                <label class="form-label">Payment Mode</label>
+                <select name="payment_mode" class="form-select" required>
+                    {% for value, label in form.fields.payment_mode.choices %}
+                    {% if value %}
+                    <option value="{{ value }}" {% if form.payment_mode.value == value %}selected{% endif %}>{{ label }}</option>
+                    {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-success">
+                <i class="bi bi-check-circle me-2"></i>Record Payment
+            </button>
         </form>
     </div>
 </div>

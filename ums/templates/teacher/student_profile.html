@@ -1,0 +1,99 @@
+{% extends 'teacher/base_teacher.html' %}
+{% block title %}{{ student.user.get_full_name }} – Profile | UMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Student Profile</h1>
+    <a href="javascript:history.back()" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>Back
+    </a>
+</div>
+
+<div class="row">
+    <!-- Student Info Card -->
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm text-center">
+            <div class="card-body py-4">
+                <img src="https://ui-avatars.com/api/?name={{ student.user.get_full_name|urlencode }}&size=100&background=6f42c1&color=fff"
+                    alt="Avatar" class="rounded-circle mb-3" width="100" height="100">
+                <h5 class="card-title mb-1">{{ student.user.get_full_name }}</h5>
+                <p class="text-muted mb-1">{{ student.enrollment_no }}</p>
+                <span class="badge bg-primary">Semester {{ student.semester }}</span>
+            </div>
+            <ul class="list-group list-group-flush text-start">
+                <li class="list-group-item"><strong>Email:</strong> {{ student.user.email|default:"N/A" }}</li>
+                <li class="list-group-item"><strong>Department:</strong> {{ student.department.name }}</li>
+                <li class="list-group-item"><strong>Admission Date:</strong> {{ student.admission_date|date:"d M Y" }}
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Attendance & Results -->
+    <div class="col-md-8">
+        <!-- Attendance Stats -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0"><i class="bi bi-calendar-check me-2 text-success"></i>Attendance Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-4">
+                        <h3 class="fw-bold text-primary">{{ total_classes }}</h3>
+                        <small class="text-muted">Total Classes</small>
+                    </div>
+                    <div class="col-4">
+                        <h3 class="fw-bold text-success">{{ present_count }}</h3>
+                        <small class="text-muted">Present</small>
+                    </div>
+                    <div class="col-4">
+                        <h3 class="fw-bold text-danger">{{ total_classes|add:"-"|add:present_count }}</h3>
+                        <small class="text-muted">Absent</small>
+                    </div>
+                </div>
+                <div class="progress mt-3" style="height: 8px;">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ attendance_pct }}%;"></div>
+                </div>
+                <p class="text-center mt-2 mb-0">
+                    <strong>{{ attendance_pct }}%</strong> Attendance
+                </p>
+            </div>
+        </div>
+
+        <!-- Recent Results -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0"><i class="bi bi-trophy me-2 text-warning"></i>Recent Results</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Date</th>
+                                <th>Course</th>
+                                <th>Exam</th>
+                                <th>Marks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for r in results %}
+                            <tr>
+                                <td>{{ r.exam.date|date:"d M Y" }}</td>
+                                <td>{{ r.exam.course.name }}</td>
+                                <td>{{ r.exam.get_exam_type_display }}</td>
+                                <td><strong>{{ r.marks_obtained }}</strong> / {{ r.exam.total_marks }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-4">No results available.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

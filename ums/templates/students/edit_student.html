@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Student | UMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Edit Student: {{ student.user.get_full_name }}</h1>
+    <a href="{% url 'student_list' %}" class="btn btn-sm btn-outline-secondary">Back to List</a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="firstName" class="form-label">First Name</label>
+                    <input type="text" class="form-control" id="firstName" name="first_name" value="{{ student.user.first_name }}" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="lastName" class="form-label">Last Name</label>
+                    <input type="text" class="form-control" id="lastName" name="last_name" value="{{ student.user.last_name }}" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" value="{{ student.user.email }}" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="enrollmentNo" class="form-label">Enrollment Number</label>
+                    <input type="text" class="form-control" id="enrollmentNo" name="enrollment_no" value="{{ student.enrollment_no }}" readonly>
+                    <div class="form-text">Cannot be changed.</div>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="department" class="form-label">Department</label>
+                    <select class="form-select" id="department" name="department" required>
+                        <option value="">Choose...</option>
+                        {% for dept in departments %}
+                        <option value="{{ dept.id }}" {% if student.department_id == dept.id %}selected{% endif %}>{{ dept.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="semester" class="form-label">Semester</label>
+                    <input type="number" class="form-control" id="semester" name="semester" min="1" max="8" value="{{ student.semester }}" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="admissionDate" class="form-label">Admission Date</label>
+                    <input type="date" class="form-control" id="admissionDate" name="admission_date" value="{{ student.admission_date|date:'Y-m-d' }}" required>
+                </div>
+                
+                <div class="col-md-6">
+                    <label for="profileImage" class="form-label">Profile Image</label>
+                    {% if student.user.profile_image %}
+                        <div class="mb-2">
+                            <img src="{{ student.user.profile_image.url }}" alt="Current Profile Image" class="rounded-circle" width="50" height="50">
+                        </div>
+                    {% endif %}
+                    <input type="file" class="form-control" id="profileImage" name="profile_image" accept="image/*">
+                </div>
+
+                <div class="col-12 mt-4">
+                    <button type="submit" class="btn btn-primary">Update Student</button>
+                    <a href="{% url 'student_list' %}" class="btn btn-outline-secondary ms-2">Cancel</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,117 @@
+{% extends 'teacher/base_teacher.html' %}
+{% block title %}Upload Marks | UMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Upload Marks</h1>
+</div>
+
+<!-- Step 1: Select Exam -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-white py-3">
+        <h5 class="mb-0"><i class="bi bi-filter me-2 text-primary"></i>Select Exam</h5>
+    </div>
+    <div class="card-body">
+        <form method="get" action="{% url 'teacher_upload_marks' %}" class="row g-3 align-items-end">
+            <div class="col-md-8">
+                <label for="exam" class="form-label fw-bold">Exam / Assessment</label>
+                <select name="exam" id="exam" class="form-select" required>
+                    <option value="">-- Select Exam --</option>
+                    {% for exam in exams %}
+                    <option value="{{ exam.id }}" {% if selected_exam and selected_exam.id == exam.id %}selected{% endif %}>
+                        {{ exam.course.code }} – {{ exam.course.name }} | {{ exam.get_exam_type_display }} ({{ exam.date|date:"d M Y" }}) – Total: {{ exam.total_marks }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search me-1"></i>Load Students
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Step 2: Enter Marks -->
+{% if selected_exam %}
+<div class="card shadow-sm">
+    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            <i class="bi bi-pencil-square me-2 text-primary"></i>
+            {{ selected_exam.course.name }} – {{ selected_exam.get_exam_type_display }}
+        </h5>
+        <span class="badge bg-info fs-6">Total Marks: {{ selected_exam.total_marks }}</span>
+    </div>
+    <div class="card-body p-0">
+        <form method="post" action="{% url 'teacher_enter_marks' selected_exam.id %}">
+            {% csrf_token %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Enrollment No</th>
+                            <th>Student Name</th>
+                            <th class="text-center">Marks Obtained</th>
+                            <th class="text-center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in student_marks %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td><span class="badge bg-secondary">{{ item.student.enrollment_no }}</span></td>
+                            <td>{{ item.student.user.get_full_name }}</td>
+                            <td class="text-center" style="width: 180px;">
+                                <input type="number" name="marks_{{ item.student.id }}"
+                                    class="form-control text-center marks-input" value="{{ item.marks|default:'' }}"
+                                    min="0" max="{{ selected_exam.total_marks }}" step="0.01" placeholder="0"
+                                    data-total="{{ selected_exam.total_marks }}">
+                            </td>
+                            <td class="text-center">
+                                {% if item.marks is not None %}
+                                {% if item.marks >= 40 %}
+                                <span class="badge bg-success">Submitted</span>
+                                {% else %}
+                                <span class="badge bg-warning">Submitted</span>
+                                {% endif %}
+                                {% else %}
+                                <span class="badge bg-light text-dark">Pending</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="p-3">
+                <button type="submit" class="btn btn-primary btn-lg w-100">
+                    <i class="bi bi-save me-2"></i>Save Marks
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.marks-input').forEach(function (input) {
+            input.addEventListener('input', function () {
+                const max = parseFloat(this.dataset.total);
+                const val = parseFloat(this.value);
+                if (val > max) {
+                    this.value = max;
+                }
+                if (val < 0) {
+                    this.value = 0;
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
