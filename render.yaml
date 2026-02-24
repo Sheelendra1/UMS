@@ -1,0 +1,27 @@
+databases:
+  - name: ums_db
+    plan: free
+    databaseName: ums
+    user: ums_user
+
+services:
+  - type: web
+    name: ums-django
+    runtime: python
+    buildCommand: "bash build.sh"
+    startCommand: "cd ums && gunicorn ums.wsgi:application"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ums_db
+          property: connectionString
+      - key: PYTHON_VERSION
+        value: "3.11.6"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: WEB_CONCURRENCY
+        value: "4"
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: "*" # You should update this later with your actual domain
